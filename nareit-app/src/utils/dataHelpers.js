@@ -70,3 +70,39 @@ export const groupSectorData = (data) => {
   
     return groupedData;
   };
+
+// Helper function to group data for retail sectors
+export const filterRetailSectors = (data) => {
+    const retailSectors = ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"];
+    return groupSectorData(data.filter((row) => retailSectors.includes(row.Sector)));
+  };
+  
+  // Helper function to group data for residential sectors
+  export const filterResidentialSectors = (data) => {
+    const residentialSectors = ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"];
+    return groupSectorData(data.filter((row) => residentialSectors.includes(row.Sector)));
+  };
+  
+  // Helper function to group data for "All Other Equity" sectors
+  export const filterAllOtherEquitySectors = (data) => {
+    const allOtherEquitySectors = [
+      "Office",
+      "Industrial",
+      "Diversified",
+      "Lodging/Resorts",
+      "Self Storage",
+      "Health Care",
+      "Timberland",
+      "Telecommunications",
+      "Data Centers",
+      "Gaming",
+      "Specialty",
+    ];
+    return groupSectorData(data.filter((row) => allOtherEquitySectors.includes(row.Sector)));
+  };
+  
+  // Helper function to group data for mortgage sectors
+  export const filterMortgageSectors = (data) => {
+    const mortgageSectors = ["Home Financing", "Commercial Financing"];
+    return groupSectorData(data.filter((row) => mortgageSectors.includes(row.Sector)));
+  };
