@@ -19,20 +19,34 @@ const Chart = ({ historicalData }) => {
     return <p>No data available for the chart.</p>;
   }
 
-  const labels = historicalData[Object.keys(historicalData)[0]].dates; // Dates for the x-axis
+  // Generate a unified list of unique dates across all sectors
+  const allDates = Array.from(
+    new Set(Object.values(historicalData).flatMap((sector) => sector.dates))
+  ).sort((a, b) => new Date(a) - new Date(b)); // Sort dates in ascending order
 
-  const datasets = Object.keys(historicalData).map((sector) => ({
-    label: sector,
-    data: historicalData[sector].yields,
-    fill: false,
-    borderColor: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
-      Math.random() * 256
-    )}, 1)`, // Random color for each line
-    tension: 0.1, // Smooth lines
-  }));
+  // Prepare datasets for each sector
+  const datasets = Object.keys(historicalData).map((sector) => {
+    const sectorData = historicalData[sector];
+
+    // Align data with allDates, filling gaps with null
+    const alignedYields = allDates.map((date) => {
+      const index = sectorData.dates.indexOf(date);
+      return index !== -1 ? sectorData.yields[index] : null;
+    });
+
+    return {
+      label: sector,
+      data: alignedYields,
+      fill: false,
+      borderColor: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(
+        Math.random() * 256
+      )}, 1)`, // Random color for each line
+      tension: 0.1, // Smooth lines
+    };
+  });
 
   const chartData = {
-    labels,
+    labels: allDates, // Unified date list for the x-axis
     datasets,
   };
 
