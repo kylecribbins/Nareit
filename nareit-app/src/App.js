@@ -45,10 +45,10 @@ function App() {
         <>
           <h2>Sector Metrics</h2>
           <Table data={transformedData} />
-          <h2>Retail Sectors</h2>
-          <RetailChart historicalData={retailData} />
           <h2>Residential Sectors</h2>
           <ResidentialChart historicalData={residentialData} />
+          <h2>Retail Sectors</h2>
+          <RetailChart historicalData={retailData} />
           <h2>All Other Equity Sectors</h2>
           <AllOtherEquityChart historicalData={otherEquityData} />
           <h2>Mortgage Sectors</h2>

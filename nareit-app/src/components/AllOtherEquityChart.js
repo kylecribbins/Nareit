@@ -113,6 +113,14 @@ const AllOtherEquityChart = ({ historicalData }) => {
         },
       },
     },
+    elements: {
+      point: {
+        radius: 0, // Removes the dots from the line graph
+      },
+      line: {
+        borderWidth: 2, // Adjust the thickness of the line for better visibility
+      },
+    },
   };
 
   return <Line data={chartData} options={options} />;
