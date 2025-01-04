@@ -1,12 +1,35 @@
 import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: "transparent", // Remove the black background
+      color: "black", // Set text color to black
+      fontWeight: "bold", // Ensure column titles are bold
+      textAlign: "center", // Ensure the header text is properly centered
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const MaterialTable = ({ data }) => {
   const [order, setOrder] = useState("asc");
@@ -62,11 +85,11 @@ const MaterialTable = ({ data }) => {
 
   return (
     <TableContainer component={Paper} style={{ marginTop: "20px" }}>
-      <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+      <Table sx={{ minWidth: 650 }} size="small" aria-label="customized table">
       <TableHead>
         <TableRow>
             {columns.map((col) => (
-            <TableCell
+            <StyledTableCell
                 key={col}
                 align={
                 ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
@@ -74,27 +97,28 @@ const MaterialTable = ({ data }) => {
                     : "left"
                 }
                 sortDirection={orderBy === col ? order : false}
-                style={{ fontWeight: "bold" }} // Bold the column titles
             >
                 <TableSortLabel
                 active={orderBy === col}
                 direction={orderBy === col ? order : "asc"}
                 onClick={() => handleSort(col)}
+                sx={{
+                    display: "flex",
+                    justifyContent: "center", // Align the sort icon and text centrally
+                    color: "inherit", // Maintain the white text color
+                }}
                 >
                 {columnTitles[col] || col}
                 </TableSortLabel>
-            </TableCell>
+            </StyledTableCell>
             ))}
         </TableRow>
         </TableHead>
         <TableBody>
           {sortedData.map((row, index) => (
-            <TableRow
-              key={index}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
+            <StyledTableRow key={index}>
               {columns.map((col) => (
-                <TableCell
+                <StyledTableCell
                   key={col}
                   align={
                     ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
@@ -113,9 +137,9 @@ const MaterialTable = ({ data }) => {
                   }}
                 >
                   {formatValue(row[col], col)}
-                </TableCell>
+                </StyledTableCell>
               ))}
-            </TableRow>
+            </StyledTableRow>
           ))}
         </TableBody>
       </Table>
