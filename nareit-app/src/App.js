@@ -39,7 +39,7 @@ function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Nareit Data Viewer</h1>
+      <h1>REIT Central</h1>
       <button onClick={handleFileLoad}>Load Data</button>
       {transformedData.length > 0 && (
         <>

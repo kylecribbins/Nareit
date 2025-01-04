@@ -24,8 +24,21 @@ const MaterialTable = ({ data }) => {
 
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
-  const formatValue = (value) =>
-    typeof value === "number" ? value.toFixed(2) : value;
+  const formatValue = (value, column) => {
+    if (typeof value === "number" && !isNaN(value)) {
+      // Format return values with a "+" or "-" symbol and a percentage
+      if (["cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(column)) {
+        const sign = value > 0 ? "+" : "";
+        return `${sign}${value.toFixed(2)}%`;
+      }
+      // Format dividend yield with percentage only
+      if (column === "currentYield") {
+        return `${value.toFixed(2)}%`;
+      }
+      return value.toFixed(2);
+    }
+    return value; // Return the raw value for non-numeric or invalid data
+  };
 
   const handleSort = (column) => {
     const isAsc = orderBy === column && order === "asc";
@@ -50,28 +63,29 @@ const MaterialTable = ({ data }) => {
   return (
     <TableContainer component={Paper} style={{ marginTop: "20px" }}>
       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
+      <TableHead>
+        <TableRow>
             {columns.map((col) => (
-              <TableCell
+            <TableCell
                 key={col}
                 align={
-                  ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
+                ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
                     ? "center"
                     : "left"
                 }
                 sortDirection={orderBy === col ? order : false}
-              >
+                style={{ fontWeight: "bold" }} // Bold the column titles
+            >
                 <TableSortLabel
-                  active={orderBy === col}
-                  direction={orderBy === col ? order : "asc"}
-                  onClick={() => handleSort(col)}
+                active={orderBy === col}
+                direction={orderBy === col ? order : "asc"}
+                onClick={() => handleSort(col)}
                 >
-                  {columnTitles[col] || col}
+                {columnTitles[col] || col}
                 </TableSortLabel>
-              </TableCell>
+            </TableCell>
             ))}
-          </TableRow>
+        </TableRow>
         </TableHead>
         <TableBody>
           {sortedData.map((row, index) => (
@@ -87,8 +101,18 @@ const MaterialTable = ({ data }) => {
                       ? "center"
                       : "left"
                   }
+                  style={{
+                    color:
+                      ["cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col) &&
+                      typeof row[col] === "number" &&
+                      !isNaN(row[col])
+                        ? row[col] > 0
+                          ? "#1b6c16" // Green for positive
+                          : "#c01417" // Red for negative
+                        : "inherit", // Default color for non-return columns or dividend yield
+                  }}
                 >
-                  {formatValue(row[col])}
+                  {formatValue(row[col], col)}
                 </TableCell>
               ))}
             </TableRow>
