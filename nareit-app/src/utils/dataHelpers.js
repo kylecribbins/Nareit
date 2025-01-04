@@ -4,75 +4,86 @@ export const calculateCAGR = (startValue, endValue, periods) => {
     return ((endValue / startValue) ** (1 / periods) - 1) * 100;
   };
   
-  // Helper function to calculate Standard Deviation (STDEV)
+// Helper function to calculate Standard Deviation (STDEV.S)
 export const calculateSTDEV = (values) => {
-    if (values.length === 0) return null;
-    const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / values.length;
-    return Math.sqrt(variance);
-  };
+  if (values.length <= 1) return null; // At least 2 values are required for sample STDEV
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / (values.length - 1); // Divide by (n - 1)
+  return Math.sqrt(variance);
+};
   
-  // Function to extract sector metrics with risk (STDEV) and return (CAGR)
+ // Function to extract sector metrics with risk (STDEV) and return (CAGR)
 export const extractSectorMetrics = (data) => {
   const sectors = [...new Set(data.map((row) => row.Sector))]; // Get unique sectors
 
   const metrics = sectors.map((sector) => {
-      const sectorData = data.filter((row) => row.Sector === sector); // Filter rows by sector
-      const latestRow = sectorData[sectorData.length - 1]; // Last row for the sector
+    const sectorData = data.filter((row) => row.Sector === sector); // Filter rows by sector
+    const latestRow = sectorData[sectorData.length - 1]; // Last row for the sector
 
-      const currentYield = parseFloat(latestRow["Dividend Yield (%)"]) || 0; // Current dividend yield
+    const currentYield = parseFloat(latestRow["Dividend Yield (%)"]) || 0; // Current dividend yield
 
-      // Extract Total Return (%) values for STDEV calculations
-      const totalReturnValues = sectorData.map((row) => parseFloat(row["Total Return (%)"])).filter(value => !isNaN(value) && value !== null);
+    // Extract Total Return (%) values for STDEV calculations
+    const totalReturnValues = sectorData
+      .map((row) => parseFloat(row["Total Return (%)"]))
+      .filter((value) => !isNaN(value) && value !== null);
 
-      // Helper function to get values for a given period
-      const getPeriodValues = (values, period) => {
-          const requiredLength = 12 * period;
-          if (values.length >= requiredLength) {
-              return values.slice(-requiredLength); // Last 'requiredLength' values
-          }
-          return null; // Not enough data for the period
-      };
+    // Helper function to get values for a given period
+    const getPeriodValues = (values, period) => {
+      const requiredLength = 12 * period;
+      if (values.length >= requiredLength) {
+        return values.slice(-requiredLength); // Last 'requiredLength' values
+      }
+      return null; // Not enough data for the period
+    };
 
-      // Calculate STDEV with consistent logic for periods
-      const stdev1 = getPeriodValues(totalReturnValues, 1) ? calculateSTDEV(getPeriodValues(totalReturnValues, 1)) : NaN;
-      const stdev3 = getPeriodValues(totalReturnValues, 3) ? calculateSTDEV(getPeriodValues(totalReturnValues, 3)) : NaN;
-      const stdev5 = getPeriodValues(totalReturnValues, 5) ? calculateSTDEV(getPeriodValues(totalReturnValues, 5)) : NaN;
-      const stdev10 = getPeriodValues(totalReturnValues, 10) ? calculateSTDEV(getPeriodValues(totalReturnValues, 10)) : NaN;
-      const stdevLife = totalReturnValues.length > 0 ? calculateSTDEV(totalReturnValues) : NaN;
+    // Calculate STDEV with consistent logic for periods
+    const stdev1 = getPeriodValues(totalReturnValues, 1)
+      ? calculateSTDEV(getPeriodValues(totalReturnValues, 1))
+      : NaN;
+    const stdev3 = getPeriodValues(totalReturnValues, 3)
+      ? calculateSTDEV(getPeriodValues(totalReturnValues, 3))
+      : NaN;
+    const stdev5 = getPeriodValues(totalReturnValues, 5)
+      ? calculateSTDEV(getPeriodValues(totalReturnValues, 5))
+      : NaN;
+    const stdev10 = getPeriodValues(totalReturnValues, 10)
+      ? calculateSTDEV(getPeriodValues(totalReturnValues, 10))
+      : NaN;
+    const stdevLife = totalReturnValues.length > 0 ? calculateSTDEV(totalReturnValues) : NaN;
 
-      // Extract Total Index values for CAGR calculations
-      const totalIndexValues = sectorData.map((row) => parseFloat(row["Total Index"]) || 0);
+    // Extract Total Index values for CAGR calculations
+    const totalIndexValues = sectorData.map((row) => parseFloat(row["Total Index"]) || 0);
 
-      const getStartValue = (period) =>
-          totalIndexValues.length >= (12 * period + 1)
-              ? totalIndexValues[totalIndexValues.length - (12 * period) - 1]
-              : null; // Start value for given period
-      const endValue = totalIndexValues[totalIndexValues.length - 1]; // Most recent value
+    const getStartValue = (period) =>
+      totalIndexValues.length >= 12 * period + 1
+        ? totalIndexValues[totalIndexValues.length - (12 * period) - 1]
+        : null; // Start value for given period
+    const endValue = totalIndexValues[totalIndexValues.length - 1]; // Most recent value
 
-      // Calculate CAGR
-      const cagr1 = getStartValue(1) ? calculateCAGR(getStartValue(1), endValue, 1) : NaN;
-      const cagr3 = getStartValue(3) ? calculateCAGR(getStartValue(3), endValue, 3) : NaN;
-      const cagr5 = getStartValue(5) ? calculateCAGR(getStartValue(5), endValue, 5) : NaN;
-      const cagr10 = getStartValue(10) ? calculateCAGR(getStartValue(10), endValue, 10) : NaN;
-      const cagrLife = totalIndexValues.length > 0
-          ? calculateCAGR(totalIndexValues[0], endValue, totalIndexValues.length / 12)
-          : NaN;
+    // Calculate CAGR
+    const cagr1 = getStartValue(1) ? calculateCAGR(getStartValue(1), endValue, 1) : NaN;
+    const cagr3 = getStartValue(3) ? calculateCAGR(getStartValue(3), endValue, 3) : NaN;
+    const cagr5 = getStartValue(5) ? calculateCAGR(getStartValue(5), endValue, 5) : NaN;
+    const cagr10 = getStartValue(10) ? calculateCAGR(getStartValue(10), endValue, 10) : NaN;
+    const cagrLife =
+      totalIndexValues.length > 0
+        ? calculateCAGR(totalIndexValues[0], endValue, totalIndexValues.length / 12)
+        : NaN;
 
-      return {
-          sector,
-          currentYield,
-          cagr1,
-          cagr3,
-          cagr5,
-          cagr10,
-          cagrLife,
-          stdev1,
-          stdev3,
-          stdev5,
-          stdev10,
-          stdevLife,
-      };
+    return {
+      sector,
+      currentYield,
+      cagr1,
+      cagr3,
+      cagr5,
+      cagr10,
+      cagrLife,
+      stdev1,
+      stdev3,
+      stdev5,
+      stdev10,
+      stdevLife,
+    };
   });
 
   return metrics;
@@ -218,4 +229,20 @@ export const filterAllOtherEquityIndexData = (data) => {
 export const filterMortgageIndexData = (data) => {
     const mortgageSectors = ["Home Financing", "Commercial Financing"];
     return groupTotalIndexData(data.filter((row) => mortgageSectors.includes(row.Sector)));
+};
+
+// Helper function to exclude STDEV-related fields from metrics
+export const filterOutSTDEV = (metrics) => {
+  return metrics.map(({ stdev1, stdev3, stdev5, stdev10, stdevLife, ...rest }) => rest);
+};
+
+// Generic helper function to extract data for scatterplots
+export const extractScatterplotData = (metrics, xField, yField) => {
+  return metrics
+    .map((metric) => ({
+      sector: metric.sector,
+      x: metric[xField],
+      y: metric[yField],
+    }))
+    .filter((point) => point.x !== null && point.y !== null && !isNaN(point.x) && !isNaN(point.y)); // Exclude invalid data points
 };

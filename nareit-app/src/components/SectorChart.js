@@ -15,38 +15,38 @@ import { Box } from "@mui/material";
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const RetailChart = ({ historicalData }) => {
+const SectorChart = ({ historicalData, sectors, title }) => {
   if (!historicalData || Object.keys(historicalData).length === 0) {
     return <p>No data available for the chart.</p>;
   }
 
-  // Define retail sectors
-  const retailSectors = ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"];
-
-  // Filter Retail data only
-  const retailData = Object.keys(historicalData)
-    .filter((sector) => retailSectors.includes(sector))
+  // Filter the data for the specified sectors
+  const filteredData = Object.keys(historicalData)
+    .filter((sector) => sectors.includes(sector))
     .reduce((obj, key) => {
       obj[key] = historicalData[key];
       return obj;
     }, {});
 
-  // Define the color scheme
-  const sectorColors = {
-    Retail: "blue",
-    "Shopping Centers": "green",
-    "Regional Malls": "red",
-    "Free Standing": "purple",
-  };
+  // Generate random colors for each sector
+  const randomColor = () =>
+    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(
+      Math.random() * 255
+    )}, 0.8)`;
 
-  // Generate a unified list of unique dates across all retail sectors
+  const sectorColors = Object.keys(filteredData).reduce((colors, sector) => {
+    colors[sector] = randomColor();
+    return colors;
+  }, {});
+
+  // Generate a unified list of unique dates across all sectors
   const allDates = Array.from(
-    new Set(Object.values(retailData).flatMap((sector) => sector.dates))
+    new Set(Object.values(filteredData).flatMap((sector) => sector.dates))
   ).sort((a, b) => new Date(a) - new Date(b)); // Sort dates in ascending order
 
-  // Prepare datasets for each retail sector
-  const datasets = Object.keys(retailData).map((sector) => {
-    const sectorData = retailData[sector];
+  // Prepare datasets for each sector
+  const datasets = Object.keys(filteredData).map((sector) => {
+    const sectorData = filteredData[sector];
 
     // Align data with allDates, filling gaps with null
     const alignedYields = allDates.map((date) => {
@@ -58,7 +58,7 @@ const RetailChart = ({ historicalData }) => {
       label: sector,
       data: alignedYields,
       fill: false,
-      borderColor: sectorColors[sector] || "black", // Default to black if not matched
+      borderColor: sectorColors[sector],
       tension: 0.1, // Smooth lines
     };
   });
@@ -78,7 +78,7 @@ const RetailChart = ({ historicalData }) => {
       },
       title: {
         display: true,
-        text: "Dividend Yields Over Time (Retail Sectors)",
+        text: title,
       },
     },
     scales: {
@@ -117,4 +117,4 @@ const RetailChart = ({ historicalData }) => {
   );
 };
 
-export default RetailChart;
+export default SectorChart;
