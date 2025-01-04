@@ -45,18 +45,18 @@ const AllOtherEquityChart = ({ historicalData }) => {
 
   // Define the color scheme
   const sectorColors = {
-    Office: "blue",
-    Industrial: "green",
-    Diversified: "red",
-    "Lodging/Resorts": "purple",
-    "Self Storage": "orange",
-    "Health Care": "cyan",
-    Timberland: "brown",
-    Telecommunications: "pink",
-    "Data Centers": "yellow",
-    Gaming: "gold",
-    Specialty: "gray",
-  };
+      Office: "#8b4513",
+      Industrial: "#006400",
+      Diversified: "#4682b4",
+      "Lodging/Resorts": "#4b0082",
+      "Self Storage": "#ff0000",
+      "Health Care": "#ffd700",
+      Timberland: "#00ff7f",
+      Telecommunications: "#00ffff",
+      "Data Centers": "#0000ff",
+      Gaming: "##ff69b4",
+      Specialty: "#ffe4c4",
+    };
 
   // Generate a unified list of unique dates across all sectors
   const allDates = Array.from(

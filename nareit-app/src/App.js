@@ -7,7 +7,7 @@ import ResidentialChart from "./components/ResidentialChart";
 import AllOtherEquityChart from "./components/AllOtherEquityChart";
 import MortgageChart from "./components/MortgageChart";
 import Grid from "@mui/material/Grid";
-import AppBar from "@mui/material/AppBar";
+import AppAppBar from "./components/AppAppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -62,7 +62,7 @@ function App() {
 
   return (
     <Router>
-      <AppBar position="static">
+      <AppAppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             REIT Central
@@ -77,7 +77,7 @@ function App() {
             About
           </Button>
         </Toolbar>
-      </AppBar>
+      </AppAppBar>
       <div style={{ padding: "20px" }}>
         <Routes>
           <Route

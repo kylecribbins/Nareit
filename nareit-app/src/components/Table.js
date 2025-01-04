@@ -8,18 +8,19 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: "transparent", // Remove the black background
-      color: "black", // Set text color to black
-      fontWeight: "bold", // Ensure column titles are bold
-      textAlign: "center", // Ensure the header text is properly centered
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "transparent", // Remove the black background
+    color: "black", // Set text color to black
+    fontWeight: "bold", // Ensure column titles are bold
+    textAlign: "center", // Ensure the header text is properly centered
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -49,18 +50,16 @@ const MaterialTable = ({ data }) => {
 
   const formatValue = (value, column) => {
     if (typeof value === "number" && !isNaN(value)) {
-      // Format return values with a "+" or "-" symbol and a percentage
       if (["cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(column)) {
         const sign = value > 0 ? "+" : "";
         return `${sign}${value.toFixed(2)}%`;
       }
-      // Format dividend yield with percentage only
       if (column === "currentYield") {
         return `${value.toFixed(2)}%`;
       }
       return value.toFixed(2);
     }
-    return value; // Return the raw value for non-numeric or invalid data
+    return value;
   };
 
   const handleSort = (column) => {
@@ -84,64 +83,69 @@ const MaterialTable = ({ data }) => {
   }, [data, orderBy, order]);
 
   return (
-    <TableContainer component={Paper} style={{ marginTop: "20px" }}>
-      <Table sx={{ minWidth: 650 }} size="small" aria-label="customized table">
-      <TableHead>
-        <TableRow>
-            {columns.map((col) => (
-            <StyledTableCell
-                key={col}
-                align={
-                col === "sector" ? "left" : "center" // Left-align the Sector column title, center others
-                }
-                sortDirection={orderBy === col ? order : false}
-            >
-                <TableSortLabel
-                active={orderBy === col}
-                direction={orderBy === col ? order : "asc"}
-                onClick={() => handleSort(col)}
-                sx={{
-                    display: "flex",
-                    justifyContent: col === "sector" ? "flex-start" : "center", // Adjust icon alignment for Sector
-                    color: "inherit", // Maintain the text color
-                }}
-                >
-                {columnTitles[col] || col}
-                </TableSortLabel>
-            </StyledTableCell>
-            ))}
-        </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedData.map((row, index) => (
-            <StyledTableRow key={index}>
+    <Box
+      sx={{
+        width: "65%",
+        margin: "20px auto", // Center the table horizontally
+      }}
+    >
+      <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+        <Table sx={{ minWidth: 650 }} size="small" aria-label="customized table">
+          <TableHead>
+            <TableRow>
               {columns.map((col) => (
                 <StyledTableCell
                   key={col}
-                  align={
-                    ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
-                      ? "center"
-                      : "left"
-                  }
-                  style={{
-                    color:
-                      ["cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col) &&
-                      typeof row[col] === "number" &&
-                      !isNaN(row[col])
-                        ? row[col] > 0
-                          ? "#1b6c16" // Green for positive
-                          : "#c01417" // Red for negative
-                        : "inherit", // Default color for non-return columns or dividend yield
-                  }}
+                  align={col === "sector" ? "left" : "center"}
+                  sortDirection={orderBy === col ? order : false}
                 >
-                  {formatValue(row[col], col)}
+                  <TableSortLabel
+                    active={orderBy === col}
+                    direction={orderBy === col ? order : "asc"}
+                    onClick={() => handleSort(col)}
+                    sx={{
+                      display: "flex",
+                      justifyContent: col === "sector" ? "flex-start" : "center",
+                      color: "inherit",
+                    }}
+                  >
+                    {columnTitles[col] || col}
+                  </TableSortLabel>
                 </StyledTableCell>
               ))}
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sortedData.map((row, index) => (
+              <StyledTableRow key={index}>
+                {columns.map((col) => (
+                  <StyledTableCell
+                    key={col}
+                    align={
+                      ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
+                        ? "center"
+                        : "left"
+                    }
+                    style={{
+                      color:
+                        ["cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col) &&
+                        typeof row[col] === "number" &&
+                        !isNaN(row[col])
+                          ? row[col] > 0
+                            ? "#1b6c16" // Green for positive
+                            : "#c01417" // Red for negative
+                          : "inherit",
+                    }}
+                  >
+                    {formatValue(row[col], col)}
+                  </StyledTableCell>
+                ))}
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 
