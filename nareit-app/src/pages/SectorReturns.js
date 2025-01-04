@@ -1,9 +1,6 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-import ResidentialSectorReturnsChart from "../components/ResidentialSectorReturnsChart";
-import RetailSectorsReturnsChart from "../components/RetailSectorsReturnsChart";
-import AllOtherEquitySectorsReturnsChart from "../components/AllOtherEquitySectorsReturnsChart";
-import MortgageSectorsReturnsChart from "../components/MortgageSectorsReturnsChart";
+import ReturnsChart from "../components/ReturnsChart";
 
 const SectorReturns = ({ residentialData, retailData, allOtherEquityData, mortgageData }) => {
   return (
@@ -12,28 +9,44 @@ const SectorReturns = ({ residentialData, retailData, allOtherEquityData, mortga
 
       <Grid container spacing={4}>
         <Grid item xs={6}>
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
-            <h2>Residential Sectors</h2>
-          </div>
-          <ResidentialSectorReturnsChart historicalData={residentialData} />
+          <ReturnsChart
+            historicalData={residentialData}
+            sectors={["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"]}
+            title="Residential Sectors"
+          />
         </Grid>
         <Grid item xs={6}>
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
-            <h2>Retail Sectors</h2>
-          </div>
-          <RetailSectorsReturnsChart historicalData={retailData} />
+          <ReturnsChart
+            historicalData={retailData}
+            sectors={["Retail", "Shopping Centers", "Regional Malls", "Free Standing"]}
+            title="Retail Sectors"
+          />
         </Grid>
         <Grid item xs={6}>
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
-            <h2>All Other Equity Sectors</h2>
-          </div>
-          <AllOtherEquitySectorsReturnsChart historicalData={allOtherEquityData} />
+          <ReturnsChart
+            historicalData={allOtherEquityData}
+            sectors={[
+              "Office",
+              "Industrial",
+              "Diversified",
+              "Lodging/Resorts",
+              "Self Storage",
+              "Health Care",
+              "Timberland",
+              "Telecommunications",
+              "Data Centers",
+              "Gaming",
+              "Specialty",
+            ]}
+            title="All Other Equity Sectors"
+          />
         </Grid>
         <Grid item xs={6}>
-          <div style={{ textAlign: "center", marginBottom: "10px" }}>
-            <h2>Mortgage Sectors</h2>
-          </div>
-          <MortgageSectorsReturnsChart historicalData={mortgageData} />
+          <ReturnsChart
+            historicalData={mortgageData}
+            sectors={["Home Financing", "Commercial Financing"]}
+            title="Mortgage Sectors"
+          />
         </Grid>
       </Grid>
     </div>

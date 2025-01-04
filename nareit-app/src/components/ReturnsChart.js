@@ -15,50 +15,50 @@ import { Box } from "@mui/material";
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const ResidentialSectorReturnsChart = ({ historicalData }) => {
+const ReturnsChart = ({ historicalData, sectors, title }) => {
   if (!historicalData || Object.keys(historicalData).length === 0) {
     return <p>No data available for the chart.</p>;
   }
 
-  // Define Residential sectors
-  const residentialSectors = ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"];
-
-  // Filter Residential data only
-  const residentialData = Object.keys(historicalData)
-    .filter((sector) => residentialSectors.includes(sector))
+  // Filter data for specified sectors
+  const filteredData = Object.keys(historicalData)
+    .filter((sector) => sectors.includes(sector))
     .reduce((obj, key) => {
       obj[key] = historicalData[key];
       return obj;
     }, {});
 
-  // Define the color scheme
-  const sectorColors = {
-    Residential: "black",
-    Apartments: "blue",
-    "Manufactured Homes": "red",
-    "Single Family Homes": "green",
-  };
+  // Generate random colors for each sector
+  const randomColor = () =>
+    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(
+      Math.random() * 255
+    )}, 0.8)`;
 
-  // Generate a unified list of unique dates across all Residential sectors
+  const sectorColors = Object.keys(filteredData).reduce((colors, sector) => {
+    colors[sector] = randomColor();
+    return colors;
+  }, {});
+
+  // Generate a unified list of unique dates across all sectors
   const allDates = Array.from(
-    new Set(Object.values(residentialData).flatMap((sector) => sector.dates))
+    new Set(Object.values(filteredData).flatMap((sector) => sector.dates))
   ).sort((a, b) => new Date(a) - new Date(b)); // Sort dates in ascending order
 
-  // Prepare datasets for each Residential sector
-  const datasets = Object.keys(residentialData).map((sector) => {
-    const sectorData = residentialData[sector];
+  // Prepare datasets for each sector
+  const datasets = Object.keys(filteredData).map((sector) => {
+    const sectorData = filteredData[sector];
 
     // Align data with allDates, filling gaps with null
-    const alignedYields = allDates.map((date) => {
+    const alignedValues = allDates.map((date) => {
       const index = sectorData.dates.indexOf(date);
       return index !== -1 ? sectorData.values[index] : null;
     });
 
     return {
       label: sector,
-      data: alignedYields,
+      data: alignedValues,
       fill: false,
-      borderColor: sectorColors[sector] || "black", // Default to black if not matched
+      borderColor: sectorColors[sector],
       tension: 0.1, // Smooth lines
     };
   });
@@ -78,7 +78,7 @@ const ResidentialSectorReturnsChart = ({ historicalData }) => {
       },
       title: {
         display: true,
-        text: "Total Returns Over Time (Residential Sectors)",
+        text: title,
       },
     },
     scales: {
@@ -117,4 +117,4 @@ const ResidentialSectorReturnsChart = ({ historicalData }) => {
   );
 };
 
-export default ResidentialSectorReturnsChart;
+export default ReturnsChart;
