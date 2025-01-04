@@ -6,6 +6,7 @@ import RetailChart from "./components/RetailChart";
 import ResidentialChart from "./components/ResidentialChart";
 import AllOtherEquityChart from "./components/AllOtherEquityChart";
 import MortgageChart from "./components/MortgageChart";
+import SectionHeader from "./components/SectionHeader";
 import Grid from "@mui/material/Grid";
 import AppAppBar from "./components/AppAppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -89,9 +90,7 @@ function App() {
                 </div>
                 {transformedData.length > 0 && (
                   <>
-                    <div style={{ textAlign: "center" }}>
-                      <h2>Sector Metrics</h2>
-                    </div>
+                    <SectionHeader title="Sector Metrics" />
                     <Table data={transformedData} />
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
                       <h2>Sector Dividend Yields</h2>

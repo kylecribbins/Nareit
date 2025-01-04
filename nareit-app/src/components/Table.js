@@ -9,13 +9,14 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: "transparent", // Remove the black background
-    color: "black", // Set text color to black
-    fontWeight: "bold", // Ensure column titles are bold
-    textAlign: "center", // Ensure the header text is properly centered
+    backgroundColor: "transparent",
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
@@ -26,7 +27,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0,
   },
@@ -49,7 +49,10 @@ const MaterialTable = ({ data }) => {
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
   const formatValue = (value, column) => {
-    if (typeof value === "number" && !isNaN(value)) {
+    if (value === null || (typeof value === "number" && isNaN(value))) {
+      return "—"; // Format NaN or null as em dash
+    }
+    if (typeof value === "number") {
       if (["cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(column)) {
         const sign = value > 0 ? "+" : "";
         return `${sign}${value.toFixed(2)}%`;
@@ -59,7 +62,7 @@ const MaterialTable = ({ data }) => {
       }
       return value.toFixed(2);
     }
-    return value;
+    return value; // Return the original value for non-numeric columns
   };
 
   const handleSort = (column) => {
@@ -86,7 +89,7 @@ const MaterialTable = ({ data }) => {
     <Box
       sx={{
         width: "65%",
-        margin: "20px auto", // Center the table horizontally
+        margin: "20px auto",
       }}
     >
       <TableContainer component={Paper} style={{ marginTop: "20px" }}>
@@ -132,8 +135,8 @@ const MaterialTable = ({ data }) => {
                         typeof row[col] === "number" &&
                         !isNaN(row[col])
                           ? row[col] > 0
-                            ? "#1b6c16" // Green for positive
-                            : "#c01417" // Red for negative
+                            ? "#1b6c16"
+                            : "#c01417"
                           : "inherit",
                     }}
                   >
@@ -145,6 +148,16 @@ const MaterialTable = ({ data }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        sx={{
+          marginTop: "10px",
+          textAlign: "left",
+        }}
+      >
+        Source: Nareit. Updated as of 12/31/24.
+      </Typography>
     </Box>
   );
 };
