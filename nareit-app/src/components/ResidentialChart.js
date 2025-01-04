@@ -10,11 +10,12 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { Box } from "@mui/material";
 
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const Chart = ({ historicalData }) => {
+const ResidentialChart = ({ historicalData }) => {
   if (!historicalData || Object.keys(historicalData).length === 0) {
     return <p>No data available for the chart.</p>;
   }
@@ -69,6 +70,7 @@ const Chart = ({ historicalData }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Allows custom sizing
     plugins: {
       legend: {
         display: true,
@@ -104,7 +106,15 @@ const Chart = ({ historicalData }) => {
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return (
+    <Box
+      sx={{
+        margin: "10px", // Add some spacing around the chart
+      }}
+    >
+      <Line data={chartData} options={options} height={600} />
+    </Box>
+  );
 };
 
-export default Chart;
+export default ResidentialChart;

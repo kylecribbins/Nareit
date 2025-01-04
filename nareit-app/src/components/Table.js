@@ -92,9 +92,7 @@ const MaterialTable = ({ data }) => {
             <StyledTableCell
                 key={col}
                 align={
-                ["currentYield", "cagr1", "cagr3", "cagr5", "cagr10", "cagrLife"].includes(col)
-                    ? "center"
-                    : "left"
+                col === "sector" ? "left" : "center" // Left-align the Sector column title, center others
                 }
                 sortDirection={orderBy === col ? order : false}
             >
@@ -104,8 +102,8 @@ const MaterialTable = ({ data }) => {
                 onClick={() => handleSort(col)}
                 sx={{
                     display: "flex",
-                    justifyContent: "center", // Align the sort icon and text centrally
-                    color: "inherit", // Maintain the white text color
+                    justifyContent: col === "sector" ? "flex-start" : "center", // Adjust icon alignment for Sector
+                    color: "inherit", // Maintain the text color
                 }}
                 >
                 {columnTitles[col] || col}

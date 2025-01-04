@@ -10,6 +10,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { Box } from "@mui/material";
 
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -69,6 +70,7 @@ const RetailChart = ({ historicalData }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Allows custom sizing
     plugins: {
       legend: {
         display: true,
@@ -104,7 +106,15 @@ const RetailChart = ({ historicalData }) => {
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return (
+    <Box
+      sx={{
+        margin: "10px", // Add some spacing around the chart
+      }}
+    >
+      <Line data={chartData} options={options} height={600} />
+    </Box>
+  );
 };
 
 export default RetailChart;
