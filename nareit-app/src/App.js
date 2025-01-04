@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Papa from "papaparse";
 import Table from "./components/Table";
-import ScatterplotChart from "./components/ScatterplotChart"; // Import the ScatterplotChart component
 import SectorChart from "./components/SectorChart";
 import SectionHeader from "./components/SectionHeader";
 import Grid from "@mui/material/Grid";
@@ -37,7 +36,10 @@ function App() {
   const [residentialIndexData, setResidentialIndexData] = useState({});
   const [otherEquityIndexData, setOtherEquityIndexData] = useState({});
   const [mortgageIndexData, setMortgageIndexData] = useState({});
-  const [scatterData, setScatterData] = useState([]); // State for scatterplot data
+  const [scatterData1Year, setScatterData1Year] = useState([]); // 1-year scatterplot data
+  const [scatterData3Year, setScatterData3Year] = useState([]); // 3-year scatterplot data
+  const [scatterData5Year, setScatterData5Year] = useState([]); // 5-year scatterplot data
+  const [scatterData10Year, setScatterData10Year] = useState([]); // 10-year scatterplot data
 
   // Automatically load data when the app starts
   useEffect(() => {
@@ -64,9 +66,11 @@ function App() {
         setOtherEquityIndexData(filterAllOtherEquityIndexData(rawData));
         setMortgageIndexData(filterMortgageIndexData(rawData));
 
-        // Extract data for 1-year risk vs return scatterplot
-        const scatterplotData = extractScatterplotData(metrics, "stdev1", "cagr1");
-        setScatterData(scatterplotData);
+        // Extract data for scatterplots
+        setScatterData1Year(extractScatterplotData(metrics, "stdev1", "cagr1"));
+        setScatterData3Year(extractScatterplotData(metrics, "stdev3", "cagr3"));
+        setScatterData5Year(extractScatterplotData(metrics, "stdev5", "cagr5"));
+        setScatterData10Year(extractScatterplotData(metrics, "stdev10", "cagr10"));
       },
     });
   }, []); // Empty dependency array ensures this runs once on component mount
@@ -89,64 +93,59 @@ function App() {
           </Button>
         </Toolbar>
       </AppAppBar>
-      <div style={{ padding: "20px" }}>
+      <div style={{ padding: "80px" }}>
         <Routes>
           <Route
             path="/"
             element={
               <>
-                <div style={{ textAlign: "center" }}>
-                  <h1>REIT Central</h1>
-                </div>
                 {transformedData.length > 0 && (
                   <>
-                    <SectionHeader title="Sector Metrics" />
+                    <SectionHeader title="REIT Central" />
                     <Table data={transformedData} />
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <h2>Sector Dividend Yields</h2>
-                    </div>
-                    <Grid container spacing={4}>
-                    <Grid item xs={6}>
-                      <SectorChart
-                        historicalData={residentialData}
-                        sectors={["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"]}
-                        title="Residential Sectors"
-                      />
+                    <SectionHeader title="Sector Dividend Yields" />
+                    <Grid container spacing={2} sx={{ paddingLeft: "40px", paddingRight: "40px" }}>
+                      <Grid item xs={6}>
+                        <SectorChart
+                          historicalData={residentialData}
+                          sectors={["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"]}
+                          title="Residential Sectors"
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <SectorChart
+                          historicalData={retailData}
+                          sectors={["Retail", "Shopping Centers", "Regional Malls", "Free Standing"]}
+                          title="Retail Sectors"
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <SectorChart
+                          historicalData={otherEquityData}
+                          sectors={[
+                            "Office",
+                            "Industrial",
+                            "Diversified",
+                            "Lodging/Resorts",
+                            "Self Storage",
+                            "Health Care",
+                            "Timberland",
+                            "Telecommunications",
+                            "Data Centers",
+                            "Gaming",
+                            "Specialty",
+                          ]}
+                          title="All Other Equity Sectors"
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <SectorChart
+                          historicalData={mortgageData}
+                          sectors={["Home Financing", "Commercial Financing"]}
+                          title="Mortgage Sectors"
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                    <SectorChart
-                      historicalData={retailData}
-                      sectors={["Retail", "Shopping Centers", "Regional Malls", "Free Standing"]}
-                      title="Retail Sectors"
-                    />
-                    </Grid>
-                    <Grid item xs={6}>
-                    <SectorChart
-                      historicalData={otherEquityData}
-                      sectors={[
-                        "Office",
-                        "Industrial",
-                        "Diversified",
-                        "Lodging/Resorts",
-                        "Self Storage",
-                        "Health Care",
-                        "Timberland",
-                        "Telecommunications",
-                        "Data Centers",
-                        "Gaming",
-                        "Specialty",
-                      ]}
-                      title="All Other Equity Sectors"
-                    />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <SectorChart
-                        historicalData={mortgageData}
-                        sectors={["Home Financing", "Commercial Financing"]}
-                        title="Mortgage Sectors"
-                      />
-                    </Grid>
-                  </Grid>
                   </>
                 )}
               </>
@@ -160,6 +159,10 @@ function App() {
                 retailData={retailIndexData}
                 allOtherEquityData={otherEquityIndexData}
                 mortgageData={mortgageIndexData}
+                scatterData1Year={scatterData1Year}
+                scatterData3Year={scatterData3Year}
+                scatterData5Year={scatterData5Year}
+                scatterData10Year={scatterData10Year}
               />
             }
           />

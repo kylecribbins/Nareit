@@ -109,10 +109,10 @@ const SectorChart = ({ historicalData, sectors, title }) => {
   return (
     <Box
       sx={{
-        margin: "10px", // Add some spacing around the chart
+        margin: "5px", // Add some spacing around the chart
       }}
     >
-      <Line data={chartData} options={options} height={600} />
+      <Line data={chartData} options={options} height={550} />
     </Box>
   );
 };

@@ -88,11 +88,17 @@ const ReturnsChart = ({ historicalData, sectors, title }) => {
           display: true,
           text: "Total Index",
         },
+        grid: {
+          drawOnChartArea: false, // Remove y-axis gridlines
+        },
       },
       x: {
         title: {
           display: true,
           text: "Date",
+        },
+        grid: {
+          drawOnChartArea: false, // Remove x-axis gridlines
         },
       },
     },
@@ -109,10 +115,10 @@ const ReturnsChart = ({ historicalData, sectors, title }) => {
   return (
     <Box
       sx={{
-        margin: "10px", // Add some spacing around the chart
+        margin: "5px", // Add some spacing around the chart
       }}
     >
-      <Line data={chartData} options={options} height={600} />
+      <Line data={chartData} options={options} height={550} />
     </Box>
   );
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
-const SectionHeader = () => {
+const SectionHeader = ({ title }) => {
   return (
     <Box
       sx={{
@@ -19,7 +19,7 @@ const SectionHeader = () => {
           textShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)", // Add a subtle shadow for better visibility
         }}
       >
-        Sector Metrics
+        {title}
       </Typography>
     </Box>
   );
