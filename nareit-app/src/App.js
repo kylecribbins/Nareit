@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Papa from "papaparse";
 import Table from "./components/Table";
@@ -6,7 +6,7 @@ import RetailChart from "./components/RetailChart";
 import ResidentialChart from "./components/ResidentialChart";
 import AllOtherEquityChart from "./components/AllOtherEquityChart";
 import MortgageChart from "./components/MortgageChart";
-import Grid from "@mui/material/Grid"; // Stable Grid import
+import Grid from "@mui/material/Grid";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -19,6 +19,10 @@ import {
   filterResidentialSectors,
   filterAllOtherEquitySectors,
   filterMortgageSectors,
+  filterRetailIndexData,
+  filterResidentialIndexData,
+  filterAllOtherEquityIndexData,
+  filterMortgageIndexData,
 } from "./utils/dataHelpers";
 
 function App() {
@@ -28,8 +32,13 @@ function App() {
   const [residentialData, setResidentialData] = useState({});
   const [otherEquityData, setOtherEquityData] = useState({});
   const [mortgageData, setMortgageData] = useState({});
+  const [retailIndexData, setRetailIndexData] = useState({});
+  const [residentialIndexData, setResidentialIndexData] = useState({});
+  const [otherEquityIndexData, setOtherEquityIndexData] = useState({});
+  const [mortgageIndexData, setMortgageIndexData] = useState({});
 
-  const handleFileLoad = () => {
+  // Automatically load data when the app starts
+  useEffect(() => {
     Papa.parse(`${process.env.PUBLIC_URL}/reit_data.csv`, {
       download: true,
       header: true,
@@ -37,13 +46,19 @@ function App() {
         const rawData = result.data;
         setData(rawData);
         setTransformedData(extractSectorMetrics(rawData)); // Extract sector metrics
-        setRetailData(filterRetailSectors(rawData)); // Filter retail sectors
-        setResidentialData(filterResidentialSectors(rawData)); // Filter residential sectors
-        setOtherEquityData(filterAllOtherEquitySectors(rawData)); // Filter all other equity sectors
-        setMortgageData(filterMortgageSectors(rawData)); // Filter mortgage sectors
+        setRetailData(filterRetailSectors(rawData)); // Filter retail sectors for homepage charts
+        setResidentialData(filterResidentialSectors(rawData)); // Filter residential sectors for homepage charts
+        setOtherEquityData(filterAllOtherEquitySectors(rawData)); // Filter all other equity sectors for homepage charts
+        setMortgageData(filterMortgageSectors(rawData)); // Filter mortgage sectors for homepage charts
+
+        // Set data for returns charts
+        setRetailIndexData(filterRetailIndexData(rawData));
+        setResidentialIndexData(filterResidentialIndexData(rawData));
+        setOtherEquityIndexData(filterAllOtherEquityIndexData(rawData));
+        setMortgageIndexData(filterMortgageIndexData(rawData));
       },
     });
-  };
+  }, []); // Empty dependency array ensures this runs once on component mount
 
   return (
     <Router>
@@ -69,24 +84,41 @@ function App() {
             path="/"
             element={
               <>
-                <h1>REIT Central</h1>
-                <button onClick={handleFileLoad}>Load Data</button>
+                <div style={{ textAlign: "center" }}>
+                  <h1>REIT Central</h1>
+                </div>
                 {transformedData.length > 0 && (
                   <>
-                    <h2>Sector Metrics</h2>
+                    <div style={{ textAlign: "center" }}>
+                      <h2>Sector Metrics</h2>
+                    </div>
                     <Table data={transformedData} />
-                    <h2>Sector Charts</h2>
+                    <div style={{ textAlign: "center", marginTop: "20px" }}>
+                      <h2>Sector Dividend Yields</h2>
+                    </div>
                     <Grid container spacing={4}>
                       <Grid item xs={6}>
+                        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                          <h2>Residential Sectors</h2>
+                        </div>
                         <ResidentialChart historicalData={residentialData} />
                       </Grid>
                       <Grid item xs={6}>
+                        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                          <h2>Retail Sectors</h2>
+                        </div>
                         <RetailChart historicalData={retailData} />
                       </Grid>
                       <Grid item xs={6}>
+                        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                          <h2>All Other Equity Sectors</h2>
+                        </div>
                         <AllOtherEquityChart historicalData={otherEquityData} />
                       </Grid>
                       <Grid item xs={6}>
+                        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                          <h2>Mortgage Sectors</h2>
+                        </div>
                         <MortgageChart historicalData={mortgageData} />
                       </Grid>
                     </Grid>
@@ -95,7 +127,17 @@ function App() {
               </>
             }
           />
-          <Route path="/sector-returns" element={<SectorReturns />} />
+          <Route
+            path="/sector-returns"
+            element={
+              <SectorReturns
+                residentialData={residentialIndexData}
+                retailData={retailIndexData}
+                allOtherEquityData={otherEquityIndexData}
+                mortgageData={mortgageIndexData}
+              />
+            }
+          />
           <Route path="/about" element={<About />} />
         </Routes>
       </div>

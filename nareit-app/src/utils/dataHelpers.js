@@ -13,40 +13,41 @@ export const calculateSTDEV = (values) => {
   };
   
   // Function to extract sector metrics
-export const extractSectorMetrics = (data) => {
+  export const extractSectorMetrics = (data) => {
     const sectors = [...new Set(data.map((row) => row.Sector))]; // Get unique sectors
-  
-    const metrics = sectors.map((sector) => {
-      const sectorData = data.filter((row) => row.Sector === sector); // Filter rows by sector
-      const latestRow = sectorData[sectorData.length - 1]; // Last row for the sector
-  
-      const currentYield = parseFloat(latestRow["Dividend Yield (%)"]) || 0; // Current dividend yield
-  
-      // Extract Total Index values for CAGR calculations
-      const totalIndexValues = sectorData.map((row) => parseFloat(row["Total Index"]) || 0);
-      const totalIndexStart = (period) =>
-        totalIndexValues[totalIndexValues.length - (12 * period) - 1]; // Start value for given period
-      const totalIndexEnd = totalIndexValues[totalIndexValues.length - 1]; // Most recent value
 
-      const cagr1 = calculateCAGR(totalIndexStart(1), totalIndexEnd, 1);
-      const cagr3 = calculateCAGR(totalIndexStart(3), totalIndexEnd, 3);
-      const cagr5 = calculateCAGR(totalIndexStart(5), totalIndexEnd, 5);
-      const cagr10 = calculateCAGR(totalIndexStart(10), totalIndexEnd, 10);
-      const cagrLife = calculateCAGR(totalIndexValues[0], totalIndexEnd, totalIndexValues.length / 12);
-  
-      return {
-        sector,
-        currentYield,
-        cagr1,
-        cagr3,
-        cagr5,
-        cagr10,
-        cagrLife,
-      };
+    const metrics = sectors.map((sector) => {
+        const sectorData = data.filter((row) => row.Sector === sector); // Filter rows by sector
+        const latestRow = sectorData[sectorData.length - 1]; // Last row for the sector
+
+        const currentYield = parseFloat(latestRow["Dividend Yield (%)"]) || 0; // Current dividend yield
+
+        // Extract Normalized Total Index values for CAGR calculations
+        const normalizedIndexValues = sectorData.map((row) => parseFloat(row["Normalized Total Index"]) || 0);
+        const normalizedIndexStart = (period) =>
+            normalizedIndexValues[normalizedIndexValues.length - (12 * period) - 1]; // Start value for given period
+        const normalizedIndexEnd = normalizedIndexValues[normalizedIndexValues.length - 1]; // Most recent value
+
+        const cagr1 = calculateCAGR(normalizedIndexStart(1), normalizedIndexEnd, 1);
+        const cagr3 = calculateCAGR(normalizedIndexStart(3), normalizedIndexEnd, 3);
+        const cagr5 = calculateCAGR(normalizedIndexStart(5), normalizedIndexEnd, 5);
+        const cagr10 = calculateCAGR(normalizedIndexStart(10), normalizedIndexEnd, 10);
+        const cagrLife = calculateCAGR(normalizedIndexValues[0], normalizedIndexEnd, normalizedIndexValues.length / 12);
+
+        return {
+            sector,
+            currentYield,
+            cagr1,
+            cagr3,
+            cagr5,
+            cagr10,
+            cagrLife,
+        };
     });
-  
+
     return metrics;
-  };
+};
+
 // Helper function to group data by sector and extract historical data
 export const groupSectorData = (data) => {
     const groupedData = {};
@@ -106,3 +107,85 @@ export const filterRetailSectors = (data) => {
     const mortgageSectors = ["Home Financing", "Commercial Financing"];
     return groupSectorData(data.filter((row) => mortgageSectors.includes(row.Sector)));
   };
+
+ // Helper function to group Total Index data by sector
+const groupTotalIndexData = (data) => {
+    const groupedData = {};
+
+    data.forEach((row) => {
+        const sector = row.Sector;
+        const date = row.Date;
+        const totalIndex = parseFloat(row["Total Index"]) || null;
+
+        // Initialize sector if not already in groupedData
+        if (!groupedData[sector]) {
+            groupedData[sector] = { dates: [], values: [] };
+        }
+
+        // Add data to the corresponding sector
+        if (sector && date && totalIndex !== null) {
+            groupedData[sector].dates.push(date);
+            groupedData[sector].values.push(totalIndex);
+        }
+    });
+
+    return groupedData;
+};
+
+// Updated functions for different sector groups using Total Index
+export const filterRetailIndexData = (data) => {
+    const retailSectors = ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"];
+    return groupTotalIndexData(data.filter((row) => retailSectors.includes(row.Sector)));
+};
+
+export const filterResidentialIndexData = (data) => {
+    const residentialSectors = ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"];
+    return groupTotalIndexData(data.filter((row) => residentialSectors.includes(row.Sector)));
+};
+
+export const filterAllOtherEquityIndexData = (data) => {
+    const allOtherEquitySectors = [
+        "Office",
+        "Industrial",
+        "Diversified",
+        "Lodging/Resorts",
+        "Self Storage",
+        "Health Care",
+        "Timberland",
+        "Telecommunications",
+        "Data Centers",
+        "Gaming",
+        "Specialty",
+    ];
+
+    // Helper function to group Normalized Total Index data by sector
+    const groupNormalizedIndexData = (data) => {
+        const groupedData = {};
+
+        data.forEach((row) => {
+            const sector = row.Sector;
+            const date = row.Date;
+            const normalizedIndex = parseFloat(row["Normalized Total Index"]) || null;
+
+            // Initialize sector if not already in groupedData
+            if (!groupedData[sector]) {
+                groupedData[sector] = { dates: [], values: [] };
+            }
+
+            // Add data to the corresponding sector
+            if (sector && date && normalizedIndex !== null) {
+                groupedData[sector].dates.push(date);
+                groupedData[sector].values.push(normalizedIndex);
+            }
+        });
+
+        return groupedData;
+    };
+
+    return groupNormalizedIndexData(data.filter((row) => allOtherEquitySectors.includes(row.Sector)));
+};
+
+export const filterMortgageIndexData = (data) => {
+    const mortgageSectors = ["Home Financing", "Commercial Financing"];
+    return groupTotalIndexData(data.filter((row) => mortgageSectors.includes(row.Sector)));
+};
