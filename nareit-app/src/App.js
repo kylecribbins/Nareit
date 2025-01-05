@@ -4,7 +4,6 @@ import Papa from "papaparse";
 import Table from "./components/Table";
 import SectorChart from "./components/SectorChart";
 import SectionHeader from "./components/SectionHeader";
-import Grid from "@mui/material/Grid";
 import AppAppBar from "./components/AppAppBar";
 import Footer from "./components/Footer";
 import Toolbar from "@mui/material/Toolbar";
@@ -165,7 +164,7 @@ function App() {
                       </Typography>
 
                       {/* Form Selector */}
-                      <FormControl sx={{ minWidth: 300 }}>
+                      <FormControl sx={{ minWidth: 250 }}>
                         <InputLabel id="dividend-sector-select-label">Select Sector</InputLabel>
                         <Select
                           labelId="dividend-sector-select-label"

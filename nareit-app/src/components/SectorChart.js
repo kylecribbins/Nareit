@@ -113,7 +113,7 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
     },
     elements: {
       point: {
-        radius: 0, // Removes the dots from the line graph
+        radius: 1, // Removes the dots from the line graph
       },
       line: {
         borderWidth: 2, // Adjust the thickness of the line for better visibility

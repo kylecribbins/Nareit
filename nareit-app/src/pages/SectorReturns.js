@@ -83,10 +83,10 @@ const SectorReturns = ({
   return (
     <div>
       {/* Section Header */}
-      <SectionHeader title="REIT Sector Returns Analysis" />
+      <SectionHeader title="REIT Sector Returns" />
 
       {/* Sector Returns Section */}
-      <Box sx={{ padding: "20px", marginTop: "75px" }}>
+      <Box sx={{ padding: "20px", marginTop: "10px" }}>
         <Box
           sx={{
             display: "flex",
@@ -109,7 +109,7 @@ const SectorReturns = ({
           </Typography>
 
           {/* Form Selector */}
-          <FormControl sx={{ minWidth: 300 }}>
+          <FormControl sx={{ minWidth: 250 }}>
             <InputLabel id="sector-select-label">Select Sector</InputLabel>
             <Select
               labelId="sector-select-label"
@@ -174,7 +174,7 @@ const SectorReturns = ({
           </Typography>
 
           {/* Form Selector */}
-          <FormControl sx={{ minWidth: 300 }}>
+          <FormControl sx={{ minWidth: 250 }}>
             <InputLabel id="timeframe-select-label">Select Timeframe</InputLabel>
             <Select
               labelId="timeframe-select-label"
