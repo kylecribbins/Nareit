@@ -7,7 +7,7 @@ import annotationPlugin from "chartjs-plugin-annotation"; // Import the annotati
 // Register required Chart.js components and plugins
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend, Title, annotationPlugin);
 
-const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
+const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)", title }) => {
   // Assign black color for all points
   const chartData = {
     datasets: [
@@ -26,15 +26,6 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
   const options = {
     responsive: true,
     plugins: {
-      title: {
-        display: true,
-        text: title, // Use the title passed as a prop
-        color: "#000", // Set title text color to black
-        font: {
-          size: 14,
-          weight: "bold", // Match font style with other chart titles
-        },
-      },
       legend: {
         display: true,
         labels: {
@@ -44,7 +35,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
       tooltip: {
         callbacks: {
           label: (context) =>
-            `${context.raw.label}: (${context.raw.x.toFixed(2)}, ${context.raw.y.toFixed(2)})`,
+            `${context.raw.label}: (${context.raw.x.toFixed(2)}, ${context.raw.y.toFixed(2)}%)`,
         },
       },
       annotation: {
@@ -85,7 +76,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
       y: {
         title: {
           display: true,
-          text: yLabel,
+          text: yLabel, // Updated to reflect Average Monthly Returns
           color: "#000", // Set y-axis title text color to black
           font: {
             size: 14,
@@ -96,6 +87,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
           drawOnChartArea: true,
         },
         ticks: {
+          callback: (value) => `${value.toFixed(2)}%`, // Format ticks as percentages
           color: "#000", // Set y-axis tick labels color to black
         },
       },

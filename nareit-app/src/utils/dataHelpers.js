@@ -1,9 +1,11 @@
+import { sectorDefinitions } from "./sectorDefinitions"; // Import centralized definitions
+
 // Helper function to calculate CAGR
 export const calculateCAGR = (startValue, endValue, periods) => {
-    if (startValue <= 0 || periods <= 0) return null; // Avoid invalid calculations
-    return ((endValue / startValue) ** (1 / periods) - 1) * 100;
-  };
-  
+  if (startValue <= 0 || periods <= 0) return null; // Avoid invalid calculations
+  return ((endValue / startValue) ** (1 / periods) - 1) * 100;
+};
+
 // Helper function to calculate Standard Deviation (STDEV.S)
 export const calculateSTDEV = (values) => {
   if (values.length <= 1) return null; // At least 2 values are required for sample STDEV
@@ -11,79 +13,93 @@ export const calculateSTDEV = (values) => {
   const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / (values.length - 1); // Divide by (n - 1)
   return Math.sqrt(variance);
 };
-  
- // Function to extract sector metrics with risk (STDEV) and return (CAGR)
+
+// Helper function to calculate arithmetic mean
+export const calculateMean = (values) => {
+  if (values.length === 0) return null;
+  return values.reduce((a, b) => a + b, 0) / values.length;
+};
+
+// Function to extract sector metrics with risk (STDEV), return (CAGR), and average monthly returns
 export const extractSectorMetrics = (data) => {
   const sectors = [...new Set(data.map((row) => row.Sector))]; // Get unique sectors
 
   const metrics = sectors.map((sector) => {
-    const sectorData = data.filter((row) => row.Sector === sector); // Filter rows by sector
-    const latestRow = sectorData[sectorData.length - 1]; // Last row for the sector
+      const sectorData = data.filter((row) => row.Sector === sector); // Filter rows by sector
+      const latestRow = sectorData[sectorData.length - 1]; // Last row for the sector
 
-    const currentYield = parseFloat(latestRow["Dividend Yield (%)"]) || 0; // Current dividend yield
+      const currentYield = parseFloat(latestRow["Dividend Yield (%)"]) || 0; // Current dividend yield
 
-    // Extract Total Return (%) values for STDEV calculations
-    const totalReturnValues = sectorData
-      .map((row) => parseFloat(row["Total Return (%)"]))
-      .filter((value) => !isNaN(value) && value !== null);
+      // Extract Total Return (%) values for STDEV and average monthly return calculations
+      const totalReturnValues = sectorData
+          .map((row) => parseFloat(row["Total Return (%)"]))
+          .filter((value) => !isNaN(value) && value !== null);
 
-    // Helper function to get values for a given period
-    const getPeriodValues = (values, period) => {
-      const requiredLength = 12 * period;
-      if (values.length >= requiredLength) {
-        return values.slice(-requiredLength); // Last 'requiredLength' values
-      }
-      return null; // Not enough data for the period
-    };
+      // Helper function to get values for a given period
+      const getPeriodValues = (values, period) => {
+          const requiredLength = 12 * period;
+          if (values.length >= requiredLength) {
+              return values.slice(-requiredLength); // Last 'requiredLength' values
+          }
+          return null; // Not enough data for the period
+      };
 
-    // Calculate STDEV with consistent logic for periods
-    const stdev1 = getPeriodValues(totalReturnValues, 1)
-      ? calculateSTDEV(getPeriodValues(totalReturnValues, 1))
-      : NaN;
-    const stdev3 = getPeriodValues(totalReturnValues, 3)
-      ? calculateSTDEV(getPeriodValues(totalReturnValues, 3))
-      : NaN;
-    const stdev5 = getPeriodValues(totalReturnValues, 5)
-      ? calculateSTDEV(getPeriodValues(totalReturnValues, 5))
-      : NaN;
-    const stdev10 = getPeriodValues(totalReturnValues, 10)
-      ? calculateSTDEV(getPeriodValues(totalReturnValues, 10))
-      : NaN;
-    const stdevLife = totalReturnValues.length > 0 ? calculateSTDEV(totalReturnValues) : NaN;
+      // Calculate STDEV and average monthly returns for consistent periods
+      const calculateMetricsForPeriod = (period) => {
+          const periodValues = getPeriodValues(totalReturnValues, period);
+          return {
+              stdev: periodValues ? calculateSTDEV(periodValues) : NaN,
+              averageReturn: periodValues ? calculateMean(periodValues) : NaN,
+          };
+      };
 
-    // Extract Total Index values for CAGR calculations
-    const totalIndexValues = sectorData.map((row) => parseFloat(row["Total Index"]) || 0);
+      const metrics1 = calculateMetricsForPeriod(1);
+      const metrics3 = calculateMetricsForPeriod(3);
+      const metrics5 = calculateMetricsForPeriod(5);
+      const metrics10 = calculateMetricsForPeriod(10);
+      const metricsLife = {
+          stdev: totalReturnValues.length > 0 ? calculateSTDEV(totalReturnValues) : NaN,
+          averageReturn: totalReturnValues.length > 0 ? calculateMean(totalReturnValues) : NaN,
+      };
 
-    const getStartValue = (period) =>
-      totalIndexValues.length >= 12 * period + 1
-        ? totalIndexValues[totalIndexValues.length - (12 * period) - 1]
-        : null; // Start value for given period
-    const endValue = totalIndexValues[totalIndexValues.length - 1]; // Most recent value
+      // Extract Total Index values for CAGR calculations
+      const totalIndexValues = sectorData.map((row) => parseFloat(row["Total Index"]) || 0);
 
-    // Calculate CAGR
-    const cagr1 = getStartValue(1) ? calculateCAGR(getStartValue(1), endValue, 1) : NaN;
-    const cagr3 = getStartValue(3) ? calculateCAGR(getStartValue(3), endValue, 3) : NaN;
-    const cagr5 = getStartValue(5) ? calculateCAGR(getStartValue(5), endValue, 5) : NaN;
-    const cagr10 = getStartValue(10) ? calculateCAGR(getStartValue(10), endValue, 10) : NaN;
-    const cagrLife =
-      totalIndexValues.length > 0
-        ? calculateCAGR(totalIndexValues[0], endValue, totalIndexValues.length / 12)
-        : NaN;
+      const getStartValue = (period) =>
+          totalIndexValues.length >= 12 * period + 1
+              ? totalIndexValues[totalIndexValues.length - (12 * period) - 1]
+              : null; // Start value for given period
+      const endValue = totalIndexValues[totalIndexValues.length - 1]; // Most recent value
 
-    return {
-      sector,
-      currentYield,
-      cagr1,
-      cagr3,
-      cagr5,
-      cagr10,
-      cagrLife,
-      stdev1,
-      stdev3,
-      stdev5,
-      stdev10,
-      stdevLife,
-    };
+      // Calculate CAGR
+      const cagr1 = getStartValue(1) ? calculateCAGR(getStartValue(1), endValue, 1) : NaN;
+      const cagr3 = getStartValue(3) ? calculateCAGR(getStartValue(3), endValue, 3) : NaN;
+      const cagr5 = getStartValue(5) ? calculateCAGR(getStartValue(5), endValue, 5) : NaN;
+      const cagr10 = getStartValue(10) ? calculateCAGR(getStartValue(10), endValue, 10) : NaN;
+      const cagrLife =
+          totalIndexValues.length > 0
+              ? calculateCAGR(totalIndexValues[0], endValue, totalIndexValues.length / 12)
+              : NaN;
+
+      return {
+          sector,
+          currentYield,
+          cagr1,
+          cagr3,
+          cagr5,
+          cagr10,
+          cagrLife,
+          stdev1: metrics1.stdev,
+          stdev3: metrics3.stdev,
+          stdev5: metrics5.stdev,
+          stdev10: metrics10.stdev,
+          stdevLife: metricsLife.stdev,
+          avgReturn1: metrics1.averageReturn,
+          avgReturn3: metrics3.averageReturn,
+          avgReturn5: metrics5.averageReturn,
+          avgReturn10: metrics10.averageReturn,
+          avgReturnLife: metricsLife.averageReturn,
+      };
   });
 
   return metrics;
@@ -115,125 +131,73 @@ export const groupSectorData = (data) => {
 
 // Helper function to group data for retail sectors
 export const filterRetailSectors = (data) => {
-    const retailSectors = ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"];
-    return groupSectorData(data.filter((row) => retailSectors.includes(row.Sector)));
-  };
-  
-  // Helper function to group data for residential sectors
-  export const filterResidentialSectors = (data) => {
-    const residentialSectors = ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"];
-    return groupSectorData(data.filter((row) => residentialSectors.includes(row.Sector)));
-  };
-  
-  // Helper function to group data for "All Other Equity" sectors
-  export const filterAllOtherEquitySectors = (data) => {
-    const allOtherEquitySectors = [
-      "Office",
-      "Industrial",
-      "Diversified",
-      "Lodging/Resorts",
-      "Self Storage",
-      "Health Care",
-      "Timberland",
-      "Telecommunications",
-      "Data Centers",
-      "Gaming",
-      "Specialty",
-    ];
-    return groupSectorData(data.filter((row) => allOtherEquitySectors.includes(row.Sector)));
-  };
-  
-  // Helper function to group data for mortgage sectors
-  export const filterMortgageSectors = (data) => {
-    const mortgageSectors = ["Home Financing", "Commercial Financing"];
-    return groupSectorData(data.filter((row) => mortgageSectors.includes(row.Sector)));
-  };
-
- // Helper function to group Total Index data by sector
-const groupTotalIndexData = (data) => {
-    const groupedData = {};
-
-    data.forEach((row) => {
-        const sector = row.Sector;
-        const date = row.Date;
-        const totalIndex = parseFloat(row["Total Index"]) || null;
-
-        // Initialize sector if not already in groupedData
-        if (!groupedData[sector]) {
-            groupedData[sector] = { dates: [], values: [] };
-        }
-
-        // Add data to the corresponding sector
-        if (sector && date && totalIndex !== null) {
-            groupedData[sector].dates.push(date);
-            groupedData[sector].values.push(totalIndex);
-        }
-    });
-
-    return groupedData;
+  return groupSectorData(data.filter((row) => sectorDefinitions.Retail.includes(row.Sector)));
 };
 
-// Updated functions for different sector groups using Total Index
+// Helper function to group data for residential sectors
+export const filterResidentialSectors = (data) => {
+  return groupSectorData(data.filter((row) => sectorDefinitions.Residential.includes(row.Sector)));
+};
+
+// Helper function to group data for "All Other Equity" sectors
+export const filterAllOtherEquitySectors = (data) => {
+  return groupSectorData(data.filter((row) => sectorDefinitions["All Other Equity"].includes(row.Sector)));
+};
+
+// Helper function to group data for mortgage sectors
+export const filterMortgageSectors = (data) => {
+  return groupSectorData(data.filter((row) => sectorDefinitions.Mortgage.includes(row.Sector)));
+};
+
+// Helper function to group data by Total Index or Normalized Total Index
+const groupIndexData = (data, indexField) => {
+  const groupedData = {};
+
+  data.forEach((row) => {
+      const sector = row.Sector;
+      const date = row.Date;
+      const indexValue = parseFloat(row[indexField]) || null;
+
+      // Initialize sector if not already in groupedData
+      if (!groupedData[sector]) {
+          groupedData[sector] = { dates: [], values: [] };
+      }
+
+      // Add data to the corresponding sector
+      if (sector && date && indexValue !== null) {
+          groupedData[sector].dates.push(date);
+          groupedData[sector].values.push(indexValue);
+      }
+  });
+
+  return groupedData;
+};
+
+// Updated functions for different sector groups using the centralized sectorDefinitions
+
 export const filterRetailIndexData = (data) => {
-    const retailSectors = ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"];
-    return groupTotalIndexData(data.filter((row) => retailSectors.includes(row.Sector)));
+  return groupIndexData(data.filter((row) => sectorDefinitions.Retail.includes(row.Sector)), "Total Index");
 };
 
 export const filterResidentialIndexData = (data) => {
-    const residentialSectors = ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"];
-    return groupTotalIndexData(data.filter((row) => residentialSectors.includes(row.Sector)));
+  return groupIndexData(data.filter((row) => sectorDefinitions.Residential.includes(row.Sector)), "Total Index");
 };
 
 export const filterAllOtherEquityIndexData = (data) => {
-    const allOtherEquitySectors = [
-        "Office",
-        "Industrial",
-        "Diversified",
-        "Lodging/Resorts",
-        "Self Storage",
-        "Health Care",
-        "Timberland",
-        "Telecommunications",
-        "Data Centers",
-        "Gaming",
-        "Specialty",
-    ];
-
-    // Helper function to group Normalized Total Index data by sector
-    const groupNormalizedIndexData = (data) => {
-        const groupedData = {};
-
-        data.forEach((row) => {
-            const sector = row.Sector;
-            const date = row.Date;
-            const normalizedIndex = parseFloat(row["Normalized Total Index"]) || null;
-
-            // Initialize sector if not already in groupedData
-            if (!groupedData[sector]) {
-                groupedData[sector] = { dates: [], values: [] };
-            }
-
-            // Add data to the corresponding sector
-            if (sector && date && normalizedIndex !== null) {
-                groupedData[sector].dates.push(date);
-                groupedData[sector].values.push(normalizedIndex);
-            }
-        });
-
-        return groupedData;
-    };
-
-    return groupNormalizedIndexData(data.filter((row) => allOtherEquitySectors.includes(row.Sector)));
+  return groupIndexData(data.filter((row) => sectorDefinitions["All Other Equity"].includes(row.Sector)), "Normalized Total Index");
 };
 
 export const filterMortgageIndexData = (data) => {
-    const mortgageSectors = ["Home Financing", "Commercial Financing"];
-    return groupTotalIndexData(data.filter((row) => mortgageSectors.includes(row.Sector)));
+  return groupIndexData(data.filter((row) => sectorDefinitions.Mortgage.includes(row.Sector)), "Total Index");
 };
 
-// Helper function to exclude STDEV-related fields from metrics
+// Helper function to exclude STDEV-related and average return fields from metrics
 export const filterOutSTDEV = (metrics) => {
-  return metrics.map(({ stdev1, stdev3, stdev5, stdev10, stdevLife, ...rest }) => rest);
+  return metrics.map(({ 
+      stdev1, stdev3, stdev5, stdev10, stdevLife, 
+      avgReturn1, avgReturn3, avgReturn5, avgReturn10, avgReturnLife, 
+      ...rest 
+  }) => rest);
 };
 
 // Generic helper function to extract data for scatterplots

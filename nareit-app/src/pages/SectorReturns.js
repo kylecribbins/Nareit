@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Grid from "@mui/material/Grid";
 import ReturnsChart from "../components/ReturnsChart";
 import ScatterplotChart from "../components/ScatterplotChart";
 import SectionHeader from "../components/SectionHeader";
@@ -70,10 +69,26 @@ const SectorReturns = ({
   };
 
   const scatterplotLabelsMap = {
-    "1-Year": { x: "1-Year Risk (STDEV)", y: "1-Year Return (CAGR)", title: "1-Year Risk vs Return" },
-    "3-Year": { x: "3-Year Risk (STDEV)", y: "3-Year Return (CAGR)", title: "3-Year Risk vs Return" },
-    "5-Year": { x: "5-Year Risk (STDEV)", y: "5-Year Return (CAGR)", title: "5-Year Risk vs Return" },
-    "10-Year": { x: "10-Year Risk (STDEV)", y: "10-Year Return (CAGR)", title: "10-Year Risk vs Return" },
+    "1-Year": { 
+      x: "Standard Deviation of Monthly Returns (%)", 
+      y: "1-Year Average Monthly Return", 
+      title: "1-Year Risk vs Average Monthly Return" 
+    },
+    "3-Year": { 
+      x: "Standard Deviation of Monthly Returns (%)", 
+      y: "3-Year Average Monthly Return", 
+      title: "3-Year Risk vs Average Monthly Return" 
+    },
+    "5-Year": { 
+      x: "Standard Deviation of Monthly Returns (%)", 
+      y: "5-Year Average Monthly Return", 
+      title: "5-Year Risk vs Average Monthly Return" 
+    },
+    "10-Year": { 
+      x: "Standard Deviation of Monthly Returns (%)", 
+      y: "10-Year Average Monthly Return", 
+      title: "10-Year Risk vs Average Monthly Return" 
+    },
   };
 
   const selectedSectorData = sectorDataMap[selectedSector];
@@ -203,7 +218,7 @@ const SectorReturns = ({
           sx={{
             width: "70%",
             maxWidth: "70%",
-            height: "800px",
+            height: "700px",
           }}
         >
           <ScatterplotChart

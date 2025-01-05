@@ -79,7 +79,7 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Dividend Yield (%)",
+          text: "Dividend Yield",
           color: "#000", // Set y-axis title text color to black
           font: {
             size: 14,
@@ -91,6 +91,7 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
         },
         ticks: {
           color: "#000", // Set y-axis tick labels color to black
+          callback: (value) => `${value}%`, // Append % symbol to tick values
         },
       },
       x: {
