@@ -14,7 +14,7 @@ import { Line } from "react-chartjs-2";
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
+const SectorChart = ({ historicalData, sectors, title, sectorColors, treasuryYields }) => {
   if (!historicalData || Object.keys(historicalData).length === 0) {
     return <p>No data available for the chart.</p>;
   }
@@ -27,9 +27,31 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
       return obj;
     }, {});
 
-  // Generate a unified list of unique dates across all sectors
+  // Determine min and max dates for the selected sector
+  const sectorDates = Object.values(filteredData).flatMap((sector) => sector.dates);
+  const minSectorDate = new Date(Math.min(...sectorDates.map((date) => new Date(date))));
+  const maxSectorDate = new Date(Math.max(...sectorDates.map((date) => new Date(date))));
+
+  // Filter Treasury data to match the sector's date range
+  const filteredTreasuryYields = {
+    dates: treasuryYields.dates.filter(
+      (date) => new Date(date) >= minSectorDate && new Date(date) <= maxSectorDate
+    ),
+    yields: treasuryYields.dates
+      .map((date, index) =>
+        new Date(date) >= minSectorDate && new Date(date) <= maxSectorDate
+          ? treasuryYields.yields[index]
+          : null
+      )
+      .filter((value) => value !== null), // Remove nulls from mismatched dates
+  };
+
+  // Generate a unified list of unique dates across the filtered data
   const allDates = Array.from(
-    new Set(Object.values(filteredData).flatMap((sector) => sector.dates))
+    new Set([
+      ...sectorDates,
+      ...filteredTreasuryYields.dates, // Include filtered Treasury dates
+    ])
   ).sort((a, b) => new Date(a) - new Date(b)); // Sort dates in ascending order
 
   // Prepare datasets for each sector
@@ -49,6 +71,19 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
       borderColor: sectorColors[sector] || "#000", // Use provided color or default to black
       tension: 0.1, // Smooth lines
     };
+  });
+
+  // Add 10-Year Treasury data as a separate dataset
+  datasets.push({
+    label: "10-Year Treasury",
+    data: filteredTreasuryYields.yields, // Use filtered Treasury yields
+    fill: true,
+    borderColor: "rgb(0, 0, 0)", // Black color for Treasury line
+    borderWidth: 2, // Match the thickness of other lines
+    borderDash: [5, 5], // Dotted line pattern (dash length and space)
+    pointStyle: "circle",
+    pointRadius: 1, // Match the point radius of other lines
+    tension: 0.1, // Smooth lines
   });
 
   const chartData = {
@@ -113,7 +148,7 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
     },
     elements: {
       point: {
-        radius: 1, // Removes the dots from the line graph
+        radius: 1, // Radius of 1 for all points
       },
       line: {
         borderWidth: 2, // Adjust the thickness of the line for better visibility
@@ -121,9 +156,7 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors }) => {
     },
   };
 
-  return (
-      <Line data={chartData} options={options} height={550} />
-  );
+  return <Line data={chartData} options={options} height={550} />;
 };
 
 export default SectorChart;

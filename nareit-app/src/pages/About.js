@@ -27,9 +27,6 @@ const About = () => {
           Data is updated monthly at the end of each month
         </Typography>
         <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>
-          Risk vs reward scatterplots display average monthly returns on the Y-axis and standard deviations on the X-axis
-        </Typography>
-        <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>
           Returns on the homepage table are calculated as Compound Annual Growth Rates (CAGRs)
         </Typography>
         <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>

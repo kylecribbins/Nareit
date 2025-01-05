@@ -24,6 +24,7 @@ import {
   filterMortgageIndexData,
   extractScatterplotData,
   sectorColors, // Import sectorColors
+  extractTreasuryData,
 } from "./utils/dataHelpers";
 import { sectorDefinitions } from "./utils/sectorDefinitions"; // Import sector definitions
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -44,6 +45,7 @@ function App() {
   const [scatterData5Year, setScatterData5Year] = useState([]);
   const [scatterData10Year, setScatterData10Year] = useState([]);
   const [selectedDividendSector, setSelectedDividendSector] = useState("Residential");
+  const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] }); // Added treasuryData state
 
   useEffect(() => {
     Papa.parse(`${process.env.PUBLIC_URL}/reit_data.csv`, {
@@ -71,6 +73,9 @@ function App() {
         setScatterData3Year(extractScatterplotData(metrics, "stdev3", "avgReturn3"));
         setScatterData5Year(extractScatterplotData(metrics, "stdev5", "avgReturn5"));
         setScatterData10Year(extractScatterplotData(metrics, "stdev10", "avgReturn10"));
+
+        const treasuryData = extractTreasuryData(rawData); // Extract Treasury data
+        setTreasuryData(treasuryData); // Save Treasury data for the chart
       },
     });
   }, []);
@@ -189,6 +194,7 @@ function App() {
                           historicalData={selectedSectorData.data}
                           sectors={selectedSectorData.sectors}
                           title={selectedSectorData.title}
+                          treasuryYields={treasuryData} // Pass Treasury data
                           sectorColors={sectorColors} // Pass colors
                         />
                       </Box>

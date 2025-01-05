@@ -1,26 +1,5 @@
 import { sectorDefinitions } from "./sectorDefinitions"; // Import centralized definitions
 
-// Helper function to merge Treasury yield data into sector dividend yield data
-export const mergeTreasuryData = (sectorData, treasuryData) => {
-  const treasuryMap = treasuryData.reduce((map, row) => {
-    map[row.Date] = parseFloat(row["10-Year Treasury"]) || null;
-    return map;
-  }, {});
-
-  const mergedData = {};
-  Object.keys(sectorData).forEach((sector) => {
-    const sectorYields = sectorData[sector];
-
-    mergedData[sector] = {
-      dates: sectorYields.dates,
-      yields: sectorYields.yields,
-      treasuryYields: sectorYields.dates.map((date) => treasuryMap[date] || null), // Match treasury yield by date
-    };
-  });
-
-  return mergedData;
-};
-
 // Helper function to calculate CAGR
 export const calculateCAGR = (startValue, endValue, periods) => {
   if (startValue <= 0 || periods <= 0) return null; // Avoid invalid calculations
@@ -126,29 +105,46 @@ export const extractSectorMetrics = (data) => {
   return metrics;
 };
 
+// Helper function to extract unique 10-Year Treasury data
+export const extractTreasuryData = (data) => {
+  const treasuryData = {};
+
+  data.forEach((row) => {
+    const date = row.Date;
+    const treasuryYield = parseFloat(row["10-Year Treasury"]) || null;
+
+    if (date && treasuryYield !== null) {
+      treasuryData[date] = treasuryYield; // Use date as key to ensure uniqueness
+    }
+  });
+
+  return {
+    dates: Object.keys(treasuryData).sort((a, b) => new Date(a) - new Date(b)), // Sort dates
+    yields: Object.values(treasuryData), // Get yields aligned with dates
+  };
+};
+
 // Helper function to group data by sector and extract historical data
 export const groupSectorData = (data) => {
-    const groupedData = {};
-  
-    data.forEach((row) => {
-      const sector = row.Sector;
-      const date = row.Date;
-      const dividendYield = parseFloat(row["Dividend Yield (%)"]) || null;
-  
-      // Initialize sector if not already in groupedData
-      if (!groupedData[sector]) {
-        groupedData[sector] = { dates: [], yields: [] };
-      }
-  
-      // Add data to the corresponding sector
-      if (sector && date && dividendYield !== null) {
-        groupedData[sector].dates.push(date);
-        groupedData[sector].yields.push(dividendYield);
-      }
-    });
-  
-    return groupedData;
-  };
+  const groupedData = {};
+
+  data.forEach((row) => {
+    const sector = row.Sector;
+    const date = row.Date;
+    const dividendYield = parseFloat(row["Dividend Yield (%)"]) || null;
+
+    if (!groupedData[sector]) {
+      groupedData[sector] = { dates: [], yields: [] }; // No treasuryYields here
+    }
+
+    if (sector && date) {
+      groupedData[sector].dates.push(date);
+      groupedData[sector].yields.push(dividendYield);
+    }
+  });
+
+  return groupedData;
+};
 
 // Helper function to group data for retail sectors
 export const filterRetailSectors = (data) => {
@@ -168,12 +164,6 @@ export const filterAllOtherEquitySectors = (data) => {
 // Helper function to group data for mortgage sectors
 export const filterMortgageSectors = (data) => {
   return groupSectorData(data.filter((row) => sectorDefinitions.Mortgage.includes(row.Sector)));
-};
-
-// Updated Helper function to group data by sector and extract historical data
-export const groupSectorDataWithTreasury = (data, treasuryData) => {
-  const sectorData = groupSectorData(data);
-  return mergeTreasuryData(sectorData, treasuryData);
 };
 
 // Helper function to group data by Total Index or Normalized Total Index

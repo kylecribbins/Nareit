@@ -3,6 +3,7 @@ import ReturnsChart from "../components/ReturnsChart";
 import ScatterplotChart from "../components/ScatterplotChart";
 import SectionHeader from "../components/SectionHeader";
 import { Box, Typography, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { sectorDefinitions } from "../utils/sectorDefinitions";
 
 const SectorReturns = ({
   residentialData,
@@ -29,34 +30,22 @@ const SectorReturns = ({
   const sectorDataMap = {
     Residential: {
       data: residentialData,
-      sectors: ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"],
+      sectors: sectorDefinitions.Residential,
       title: "Residential Sectors",
     },
     Retail: {
       data: retailData,
-      sectors: ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"],
+      sectors: sectorDefinitions.Retail,
       title: "Retail Sectors",
     },
     "All Other Equity": {
       data: allOtherEquityData,
-      sectors: [
-        "Office",
-        "Industrial",
-        "Diversified",
-        "Lodging/Resorts",
-        "Self Storage",
-        "Health Care",
-        "Timberland",
-        "Telecommunications",
-        "Data Centers",
-        "Gaming",
-        "Specialty",
-      ],
+      sectors: sectorDefinitions["All Other Equity"],
       title: "All Other Equity Sectors",
     },
     Mortgage: {
       data: mortgageData,
-      sectors: ["Home Financing", "Commercial Financing"],
+      sectors: sectorDefinitions.Mortgage,
       title: "Mortgage Sectors",
     },
   };
