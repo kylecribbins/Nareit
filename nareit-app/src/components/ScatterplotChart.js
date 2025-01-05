@@ -26,21 +26,40 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
   const options = {
     responsive: true,
     plugins: {
+      title: {
+        display: true,
+        text: title, // Use the title passed as a prop
+        color: "#000", // Set title text color to black
+        font: {
+          size: 14,
+          weight: "bold", // Match font style with other chart titles
+        },
+      },
       legend: {
-        display: false,
+        display: true,
+        labels: {
+          color: "#000", // Set legend text color to black
+        },
       },
       tooltip: {
         callbacks: {
-          label: (context) => `${context.raw.label}: (${context.raw.x.toFixed(2)}, ${context.raw.y.toFixed(2)})`,
+          label: (context) =>
+            `${context.raw.label}: (${context.raw.x.toFixed(2)}, ${context.raw.y.toFixed(2)})`,
         },
       },
-      title: {
-        display: true, // Enable the title display
-        text: title, // Use the title prop
-        font: {
-          size: 16, // Adjust title font size
-          weight: "bold", // Make it bold
-        },
+      annotation: {
+        annotations: data.map((point) => ({
+          type: "label",
+          xValue: point.x,
+          yValue: point.y,
+          content: point.sector,
+          color: "rgba(0, 0, 0, 1)", // Black for labels
+          font: {
+            size: 10,
+            weight: "normal",
+          },
+          yAdjust: 13, // Move the label 13 pixels below the dot
+        })),
       },
     },
     scales: {
@@ -50,50 +69,45 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
         title: {
           display: true,
           text: xLabel,
+          color: "#000", // Set x-axis title text color to black
+          font: {
+            size: 14,
+            weight: "bold", // Match font size and weight to other charts
+          },
         },
         grid: {
           drawOnChartArea: false,
+        },
+        ticks: {
+          color: "#000", // Set x-axis tick labels color to black
         },
       },
       y: {
         title: {
           display: true,
           text: yLabel,
+          color: "#000", // Set y-axis title text color to black
+          font: {
+            size: 14,
+            weight: "bold", // Match font size and weight to other charts
+          },
         },
         grid: {
-          drawOnChartArea: false,
+          drawOnChartArea: true,
+        },
+        ticks: {
+          color: "#000", // Set y-axis tick labels color to black
         },
       },
     },
     elements: {
       point: {
-        radius: 5, // Size of the dots
+        radius: 6, // Size of the dots
       },
     },
   };
 
-  // Add labels below dots using Chart.js annotation plugin
-  const annotations = {
-    plugins: {
-      tooltip: { enabled: true },
-      annotation: {
-        annotations: data.map((point) => ({
-          type: "label",
-          xValue: point.x,
-          yValue: point.y,
-          content: point.sector,
-          color: "rgba(0, 0, 0, 1)", // Black for labels as well
-          font: {
-            size: 10,
-            weight: "normal",
-          },
-          yAdjust: 13, // Move the label 13 pixels below the dot, consistent across charts
-        })),
-      },
-    },
-  };
-
-  return <Scatter data={chartData} options={{ ...options, ...annotations }} />;
+  return <Scatter data={chartData} options={options} />;
 };
 
 export default ScatterplotChart;

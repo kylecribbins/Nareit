@@ -26,6 +26,7 @@ import {
   extractScatterplotData,
   sectorColors, // Import sectorColors
 } from "./utils/dataHelpers";
+import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 function App() {
   const [data, setData] = useState([]);
@@ -42,6 +43,7 @@ function App() {
   const [scatterData3Year, setScatterData3Year] = useState([]);
   const [scatterData5Year, setScatterData5Year] = useState([]);
   const [scatterData10Year, setScatterData10Year] = useState([]);
+  const [selectedDividendSector, setSelectedDividendSector] = useState("Residential");
 
   useEffect(() => {
     Papa.parse(`${process.env.PUBLIC_URL}/reit_data.csv`, {
@@ -73,6 +75,44 @@ function App() {
     });
   }, []);
 
+  // Mapping for dropdown selection to sector data
+  const dividendSectorDataMap = {
+    Residential: {
+      data: residentialData,
+      sectors: ["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"],
+      title: "Residential Sectors",
+    },
+    Retail: {
+      data: retailData,
+      sectors: ["Retail", "Shopping Centers", "Regional Malls", "Free Standing"],
+      title: "Retail Sectors",
+    },
+    "All Other Equity": {
+      data: otherEquityData,
+      sectors: [
+        "Office",
+        "Industrial",
+        "Diversified",
+        "Lodging/Resorts",
+        "Self Storage",
+        "Health Care",
+        "Timberland",
+        "Telecommunications",
+        "Data Centers",
+        "Gaming",
+        "Specialty",
+      ],
+      title: "All Other Equity Sectors",
+    },
+    Mortgage: {
+      data: mortgageData,
+      sectors: ["Home Financing", "Commercial Financing"],
+      title: "Mortgage Sectors",
+    },
+  };
+
+  const selectedSectorData = dividendSectorDataMap[selectedDividendSector];
+
   return (
     <Router>
       <AppAppBar position="static">
@@ -101,53 +141,70 @@ function App() {
                   <>
                     <SectionHeader title="REIT Central" />
                     <Table data={transformedData} />
-                    <SectionHeader title="Sector Dividend Yields" />
-                    <Grid container spacing={2} sx={{ paddingLeft: "40px", paddingRight: "40px" }}>
-                      <Grid item xs={6}>
-                        <SectorChart
-                          historicalData={residentialData}
-                          sectors={["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"]}
-                          title="Residential Sectors"
-                          sectorColors={sectorColors} // Pass colors
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <SectorChart
-                          historicalData={retailData}
-                          sectors={["Retail", "Shopping Centers", "Regional Malls", "Free Standing"]}
-                          title="Retail Sectors"
-                          sectorColors={sectorColors} // Pass colors
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <SectorChart
-                          historicalData={otherEquityData}
-                          sectors={[
-                            "Office",
-                            "Industrial",
-                            "Diversified",
-                            "Lodging/Resorts",
-                            "Self Storage",
-                            "Health Care",
-                            "Timberland",
-                            "Telecommunications",
-                            "Data Centers",
-                            "Gaming",
-                            "Specialty",
-                          ]}
-                          title="All Other Equity Sectors"
-                          sectorColors={sectorColors} // Pass colors
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <SectorChart
-                          historicalData={mortgageData}
-                          sectors={["Home Financing", "Commercial Financing"]}
-                          title="Mortgage Sectors"
-                          sectorColors={sectorColors} // Pass colors
-                        />
-                      </Grid>
-                    </Grid>
+
+                    <Box sx={{ padding: "20px", marginTop: "75px" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "20px", // Add space between title and selector
+                        width: "70%", // Match the width of the chart below
+                        margin: "0 auto", // Center the container
+                      }}
+                    >
+                      {/* Title */}
+                      <Typography
+                        variant="h5"
+                        component="h2"
+                        sx={{
+                          fontWeight: "bold",
+                          flexShrink: 0, // Prevent the title from shrinking
+                        }}
+                      >
+                        Sector Dividend Yields
+                      </Typography>
+
+                      {/* Form Selector */}
+                      <FormControl sx={{ minWidth: 300 }}>
+                        <InputLabel id="dividend-sector-select-label">Select Sector</InputLabel>
+                        <Select
+                          labelId="dividend-sector-select-label"
+                          value={selectedDividendSector}
+                          onChange={(e) => setSelectedDividendSector(e.target.value)}
+                          autoWidth
+                        >
+                          <MenuItem value="Residential">Residential</MenuItem>
+                          <MenuItem value="Retail">Retail</MenuItem>
+                          <MenuItem value="All Other Equity">All Other Equity</MenuItem>
+                          <MenuItem value="Mortgage">Mortgage</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      padding: "10px",
+                      textAlign: "center",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: "70%",
+                        maxWidth: "70%",
+                        height: "850px",
+                      }}
+                    >
+                      <SectorChart
+                        historicalData={selectedSectorData.data}
+                        sectors={selectedSectorData.sectors}
+                        title={selectedSectorData.title}
+                        sectorColors={sectorColors} // Pass colors
+                      />
+                    </Box>
+                  </Box>
                   </>
                 )}
               </>

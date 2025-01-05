@@ -21,8 +21,8 @@ const Footer = () => {
           <Grid item xs={12} sm={6}>
             <Typography variant="body2">
               Follow us on{" "}
-              <Link href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                Twitter
+              <Link href="https://x.com/ReitCentral" target="_blank" rel="noopener noreferrer">
+                Twitter (X)
               </Link>
               .
             </Typography>

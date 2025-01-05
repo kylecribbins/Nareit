@@ -64,10 +64,14 @@ const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
       legend: {
         display: true,
         position: "top",
+        labels: {
+          color: "#000", // Set legend text color to black
+        },
       },
       title: {
         display: true,
         text: title,
+        color: "#000", // Set chart title text color to black
       },
     },
     scales: {
@@ -76,18 +80,34 @@ const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
         title: {
           display: true,
           text: "Total Index",
+          color: "#000", // Set y-axis title text color to black
+          font: {
+            size: 14,
+            weight: "bold", // Make y-axis title bold
+          },
         },
         grid: {
-          drawOnChartArea: false, // Remove y-axis gridlines
+          drawOnChartArea: true, // Keep y-axis gridlines
+        },
+        ticks: {
+          color: "#000", // Set y-axis tick labels color to black
         },
       },
       x: {
         title: {
           display: true,
           text: "Date",
+          color: "#000", // Set x-axis title text color to black
+          font: {
+            size: 14,
+            weight: "bold", // Make x-axis title bold
+          },
         },
         grid: {
           drawOnChartArea: false, // Remove x-axis gridlines
+        },
+        ticks: {
+          color: "#000", // Set x-axis tick labels color to black
         },
       },
     },
@@ -101,15 +121,7 @@ const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
     },
   };
 
-  return (
-    <Box
-      sx={{
-        margin: "5px", // Add some spacing around the chart
-      }}
-    >
-      <Line data={chartData} options={options} height={550} />
-    </Box>
-  );
+  return <Line data={chartData} options={options} height={550} />;
 };
 
 export default ReturnsChart;
