@@ -1,5 +1,26 @@
 import { sectorDefinitions } from "./sectorDefinitions"; // Import centralized definitions
 
+// Helper function to merge Treasury yield data into sector dividend yield data
+export const mergeTreasuryData = (sectorData, treasuryData) => {
+  const treasuryMap = treasuryData.reduce((map, row) => {
+    map[row.Date] = parseFloat(row["10-Year Treasury"]) || null;
+    return map;
+  }, {});
+
+  const mergedData = {};
+  Object.keys(sectorData).forEach((sector) => {
+    const sectorYields = sectorData[sector];
+
+    mergedData[sector] = {
+      dates: sectorYields.dates,
+      yields: sectorYields.yields,
+      treasuryYields: sectorYields.dates.map((date) => treasuryMap[date] || null), // Match treasury yield by date
+    };
+  });
+
+  return mergedData;
+};
+
 // Helper function to calculate CAGR
 export const calculateCAGR = (startValue, endValue, periods) => {
   if (startValue <= 0 || periods <= 0) return null; // Avoid invalid calculations
@@ -147,6 +168,12 @@ export const filterAllOtherEquitySectors = (data) => {
 // Helper function to group data for mortgage sectors
 export const filterMortgageSectors = (data) => {
   return groupSectorData(data.filter((row) => sectorDefinitions.Mortgage.includes(row.Sector)));
+};
+
+// Updated Helper function to group data by sector and extract historical data
+export const groupSectorDataWithTreasury = (data, treasuryData) => {
+  const sectorData = groupSectorData(data);
+  return mergeTreasuryData(sectorData, treasuryData);
 };
 
 // Helper function to group data by Total Index or Normalized Total Index

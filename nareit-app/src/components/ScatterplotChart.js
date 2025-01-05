@@ -1,7 +1,6 @@
 import React from "react";
 import { Scatter } from "react-chartjs-2";
 import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend, Title } from "chart.js";
-import { Box } from "@mui/material"; // Import Box for styling
 import annotationPlugin from "chartjs-plugin-annotation"; // Import the annotation plugin
 
 // Register required Chart.js components and plugins

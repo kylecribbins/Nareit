@@ -37,8 +37,17 @@ export default function AppAppBar() {
     >
       <Container maxWidth="lg">
         <StyledToolbar>
-          {/* Left: Logo or Title */}
-          <Box sx={{ flexGrow: 1 }}>
+          {/* Left: Logo and Title */}
+          <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+            <Box
+              component="img"
+              src={`${process.env.PUBLIC_URL}/logo.png`}
+              alt="Logo"
+              sx={{
+                height: "40px", // Adjust height to fit nicely
+                marginRight: "10px", // Add space between logo and title
+              }}
+            />
             <Button
               component={Link}
               to="/"
