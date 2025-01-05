@@ -6,6 +6,7 @@ import SectorChart from "./components/SectorChart";
 import SectionHeader from "./components/SectionHeader";
 import Grid from "@mui/material/Grid";
 import AppAppBar from "./components/AppAppBar";
+import Footer from "./components/Footer"; // Import Footer component
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -22,7 +23,7 @@ import {
   filterResidentialIndexData,
   filterAllOtherEquityIndexData,
   filterMortgageIndexData,
-  extractScatterplotData, // Import helper function for scatterplot data
+  extractScatterplotData,
 } from "./utils/dataHelpers";
 
 function App() {
@@ -41,7 +42,6 @@ function App() {
   const [scatterData5Year, setScatterData5Year] = useState([]); // 5-year scatterplot data
   const [scatterData10Year, setScatterData10Year] = useState([]); // 10-year scatterplot data
 
-  // Automatically load data when the app starts
   useEffect(() => {
     Papa.parse(`${process.env.PUBLIC_URL}/reit_data.csv`, {
       download: true,
@@ -50,30 +50,27 @@ function App() {
         const rawData = result.data;
         setData(rawData);
 
-        // Extract metrics and filter out STDEV for the table
         const metrics = extractSectorMetrics(rawData);
-        const filteredMetrics = filterOutSTDEV(metrics); // Remove STDEV fields
-        setTransformedData(filteredMetrics); // Pass filtered data to the table
+        const filteredMetrics = filterOutSTDEV(metrics);
+        setTransformedData(filteredMetrics);
 
-        setRetailData(filterRetailSectors(rawData)); // Filter retail sectors for homepage charts
-        setResidentialData(filterResidentialSectors(rawData)); // Filter residential sectors for homepage charts
-        setOtherEquityData(filterAllOtherEquitySectors(rawData)); // Filter all other equity sectors for homepage charts
-        setMortgageData(filterMortgageSectors(rawData)); // Filter mortgage sectors for homepage charts
+        setRetailData(filterRetailSectors(rawData));
+        setResidentialData(filterResidentialSectors(rawData));
+        setOtherEquityData(filterAllOtherEquitySectors(rawData));
+        setMortgageData(filterMortgageSectors(rawData));
 
-        // Set data for returns charts
         setRetailIndexData(filterRetailIndexData(rawData));
         setResidentialIndexData(filterResidentialIndexData(rawData));
         setOtherEquityIndexData(filterAllOtherEquityIndexData(rawData));
         setMortgageIndexData(filterMortgageIndexData(rawData));
 
-        // Extract data for scatterplots
         setScatterData1Year(extractScatterplotData(metrics, "stdev1", "cagr1"));
         setScatterData3Year(extractScatterplotData(metrics, "stdev3", "cagr3"));
         setScatterData5Year(extractScatterplotData(metrics, "stdev5", "cagr5"));
         setScatterData10Year(extractScatterplotData(metrics, "stdev10", "cagr10"));
       },
     });
-  }, []); // Empty dependency array ensures this runs once on component mount
+  }, []);
 
   return (
     <Router>
@@ -93,7 +90,7 @@ function App() {
           </Button>
         </Toolbar>
       </AppAppBar>
-      <div style={{ padding: "80px" }}>
+      <main style={{ flex: "1", padding: "80px" }}>
         <Routes>
           <Route
             path="/"
@@ -168,7 +165,8 @@ function App() {
           />
           <Route path="/about" element={<About />} />
         </Routes>
-      </div>
+      </main>
+      <Footer /> {/* Footer always snaps to the bottom */}
     </Router>
   );
 }

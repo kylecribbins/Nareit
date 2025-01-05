@@ -88,11 +88,17 @@ const SectorChart = ({ historicalData, sectors, title }) => {
           display: true,
           text: "Dividend Yield (%)",
         },
+        grid: {
+          drawOnChartArea: false, // Remove y-axis gridlines
+        },
       },
       x: {
         title: {
           display: true,
           text: "Date",
+        },
+        grid: {
+          drawOnChartArea: false, // Remove x-axis gridlines
         },
       },
     },

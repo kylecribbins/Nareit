@@ -100,13 +100,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
   };
 
   return (
-    <Box
-      sx={{
-        margin: "5px", // Add some spacing around the chart
-      }}
-    >
-      <Scatter data={chartData} options={{ ...options, ...annotations }} height={160} />
-    </Box>
+      <Scatter data={chartData} options={{ ...options, ...annotations }} />
   );
 };
 

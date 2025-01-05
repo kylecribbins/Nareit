@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html, body {
+  height: 100%; /* Ensure the body and html take up the full height */
+  margin: 0; /* Remove default margin */
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%; /* Ensures the entire page is at least the height of the viewport */
+}
+
+main {
+  flex: 1; /* Fills available space, pushing the footer to the bottom */
+}
