@@ -8,20 +8,14 @@ import annotationPlugin from "chartjs-plugin-annotation"; // Import the annotati
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend, Title, annotationPlugin);
 
 const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
-  // Function to generate random colors
-  const generateRandomColor = () =>
-    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(
-      Math.random() * 255
-    )}, 0.8)`;
-
-  // Assign random colors to each point
+  // Assign black color for all points
   const chartData = {
     datasets: [
       {
         label: title,
         data: data.map((point) => ({ x: point.x, y: point.y, label: point.sector })),
-        backgroundColor: data.map(() => generateRandomColor()), // Random color for each dot
-        borderColor: data.map(() => generateRandomColor()), // Match border color for consistency
+        backgroundColor: "rgba(0, 0, 0, 0.8)", // Black color for dots
+        borderColor: "rgba(0, 0, 0, 1)", // Black border for dots
         borderWidth: 1,
         pointRadius: 6,
         pointHoverRadius: 8,
@@ -41,7 +35,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
         },
       },
       title: {
-        display: true, // Disable the title display
+        display: true, // Enable the title display
         text: title, // Use the title prop
         font: {
           size: 16, // Adjust title font size
@@ -83,12 +77,12 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
     plugins: {
       tooltip: { enabled: true },
       annotation: {
-        annotations: data.map((point, index) => ({
+        annotations: data.map((point) => ({
           type: "label",
           xValue: point.x,
           yValue: point.y,
           content: point.sector,
-          color: chartData.datasets[0].backgroundColor[index],
+          color: "rgba(0, 0, 0, 1)", // Black for labels as well
           font: {
             size: 10,
             weight: "normal",
@@ -99,9 +93,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel, title }) => {
     },
   };
 
-  return (
-      <Scatter data={chartData} options={{ ...options, ...annotations }} />
-  );
+  return <Scatter data={chartData} options={{ ...options, ...annotations }} />;
 };
 
 export default ScatterplotChart;

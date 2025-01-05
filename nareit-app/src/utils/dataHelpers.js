@@ -246,3 +246,27 @@ export const extractScatterplotData = (metrics, xField, yField) => {
     }))
     .filter((point) => point.x !== null && point.y !== null && !isNaN(point.x) && !isNaN(point.y)); // Exclude invalid data points
 };
+
+export const sectorColors = {
+  Residential: "#000000", // Black
+  Apartments: "#0000ff", // Blue
+  "Manufactured Homes": "#ff0000", // Red
+  "Single Family Homes": "#008000", // Green
+  Retail: "#000000", // Black
+  "Shopping Centers": "#0000ff", // Blue
+  "Regional Malls": "#ff0000", // Red
+  "Free Standing": "#008000", // Green
+  Office: "#000000", // Black
+  Industrial: "#0000ff", // Blue
+  Diversified: "#ff0000", // Red
+  "Lodging/Resorts": "#b03060", // maroon3
+  "Self Storage": "#ff4500", // orangered
+  "Health Care": "#ffd700", // gold
+  Timberland: "#deb887", // burlywood
+  Telecommunications: "#008000", // Green
+  "Data Centers": "#00ffff", // aqua
+  Gaming: "#ff00ff", // fuschia
+  Specialty: "#6495ed", // cornflower
+  "Home Financing": "#000000", // Black
+  "Commercial Financing": "#0000ff", // Blue
+};

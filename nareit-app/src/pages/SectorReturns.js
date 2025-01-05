@@ -14,6 +14,7 @@ const SectorReturns = ({
   scatterData3Year,
   scatterData5Year,
   scatterData10Year,
+  sectorColors, // Accept sectorColors prop
 }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState("1-Year");
 
@@ -49,6 +50,7 @@ const SectorReturns = ({
             historicalData={residentialData}
             sectors={["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"]}
             title="Residential Sectors"
+            sectorColors={sectorColors} // Pass sectorColors to ReturnsChart
           />
         </Grid>
         <Grid item xs={6}>
@@ -56,6 +58,7 @@ const SectorReturns = ({
             historicalData={retailData}
             sectors={["Retail", "Shopping Centers", "Regional Malls", "Free Standing"]}
             title="Retail Sectors"
+            sectorColors={sectorColors} // Pass sectorColors to ReturnsChart
           />
         </Grid>
         <Grid item xs={6}>
@@ -75,6 +78,7 @@ const SectorReturns = ({
               "Specialty",
             ]}
             title="All Other Equity Sectors"
+            sectorColors={sectorColors} // Pass sectorColors to ReturnsChart
           />
         </Grid>
         <Grid item xs={6}>
@@ -82,6 +86,7 @@ const SectorReturns = ({
             historicalData={mortgageData}
             sectors={["Home Financing", "Commercial Financing"]}
             title="Mortgage Sectors"
+            sectorColors={sectorColors} // Pass sectorColors to ReturnsChart
           />
         </Grid>
       </Grid>

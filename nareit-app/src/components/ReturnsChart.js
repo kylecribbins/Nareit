@@ -15,7 +15,7 @@ import { Box } from "@mui/material";
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const ReturnsChart = ({ historicalData, sectors, title }) => {
+const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
   if (!historicalData || Object.keys(historicalData).length === 0) {
     return <p>No data available for the chart.</p>;
   }
@@ -27,17 +27,6 @@ const ReturnsChart = ({ historicalData, sectors, title }) => {
       obj[key] = historicalData[key];
       return obj;
     }, {});
-
-  // Generate random colors for each sector
-  const randomColor = () =>
-    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(
-      Math.random() * 255
-    )}, 0.8)`;
-
-  const sectorColors = Object.keys(filteredData).reduce((colors, sector) => {
-    colors[sector] = randomColor();
-    return colors;
-  }, {});
 
   // Generate a unified list of unique dates across all sectors
   const allDates = Array.from(
@@ -58,7 +47,7 @@ const ReturnsChart = ({ historicalData, sectors, title }) => {
       label: sector,
       data: alignedValues,
       fill: false,
-      borderColor: sectorColors[sector],
+      borderColor: sectorColors[sector] || "#000", // Use provided color or default to black
       tension: 0.1, // Smooth lines
     };
   });

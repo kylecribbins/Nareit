@@ -6,7 +6,7 @@ import SectorChart from "./components/SectorChart";
 import SectionHeader from "./components/SectionHeader";
 import Grid from "@mui/material/Grid";
 import AppAppBar from "./components/AppAppBar";
-import Footer from "./components/Footer"; // Import Footer component
+import Footer from "./components/Footer";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -24,6 +24,7 @@ import {
   filterAllOtherEquityIndexData,
   filterMortgageIndexData,
   extractScatterplotData,
+  sectorColors, // Import sectorColors
 } from "./utils/dataHelpers";
 
 function App() {
@@ -37,10 +38,10 @@ function App() {
   const [residentialIndexData, setResidentialIndexData] = useState({});
   const [otherEquityIndexData, setOtherEquityIndexData] = useState({});
   const [mortgageIndexData, setMortgageIndexData] = useState({});
-  const [scatterData1Year, setScatterData1Year] = useState([]); // 1-year scatterplot data
-  const [scatterData3Year, setScatterData3Year] = useState([]); // 3-year scatterplot data
-  const [scatterData5Year, setScatterData5Year] = useState([]); // 5-year scatterplot data
-  const [scatterData10Year, setScatterData10Year] = useState([]); // 10-year scatterplot data
+  const [scatterData1Year, setScatterData1Year] = useState([]);
+  const [scatterData3Year, setScatterData3Year] = useState([]);
+  const [scatterData5Year, setScatterData5Year] = useState([]);
+  const [scatterData10Year, setScatterData10Year] = useState([]);
 
   useEffect(() => {
     Papa.parse(`${process.env.PUBLIC_URL}/reit_data.csv`, {
@@ -107,6 +108,7 @@ function App() {
                           historicalData={residentialData}
                           sectors={["Residential", "Apartments", "Manufactured Homes", "Single Family Homes"]}
                           title="Residential Sectors"
+                          sectorColors={sectorColors} // Pass colors
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -114,6 +116,7 @@ function App() {
                           historicalData={retailData}
                           sectors={["Retail", "Shopping Centers", "Regional Malls", "Free Standing"]}
                           title="Retail Sectors"
+                          sectorColors={sectorColors} // Pass colors
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -133,6 +136,7 @@ function App() {
                             "Specialty",
                           ]}
                           title="All Other Equity Sectors"
+                          sectorColors={sectorColors} // Pass colors
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -140,6 +144,7 @@ function App() {
                           historicalData={mortgageData}
                           sectors={["Home Financing", "Commercial Financing"]}
                           title="Mortgage Sectors"
+                          sectorColors={sectorColors} // Pass colors
                         />
                       </Grid>
                     </Grid>
@@ -160,13 +165,14 @@ function App() {
                 scatterData3Year={scatterData3Year}
                 scatterData5Year={scatterData5Year}
                 scatterData10Year={scatterData10Year}
+                sectorColors={sectorColors} // Pass colors to SectorReturns
               />
             }
           />
           <Route path="/about" element={<About />} />
         </Routes>
       </main>
-      <Footer /> {/* Footer always snaps to the bottom */}
+      <Footer />
     </Router>
   );
 }
