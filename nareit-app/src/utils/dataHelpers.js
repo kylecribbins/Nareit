@@ -20,7 +20,7 @@ export const calculateMean = (values) => {
   return values.reduce((a, b) => a + b, 0) / values.length;
 };
 
-// Function to extract sector metrics with risk (STDEV), return (CAGR), and average monthly returns
+// TABLE Function to extract sector metrics with risk (STDEV), return (CAGR), and average monthly returns
 export const extractSectorMetrics = (data) => {
   const sectors = [...new Set(data.map((row) => row.Sector))]; // Get unique sectors
 
@@ -144,7 +144,7 @@ export const extractSP500NormalizedData = (data) => {
   return { dates, normalized };
 };
 
-// Helper function to group data by sector and extract historical data
+// DIVIDEND YIELD CHART Helper function to group data by sector and extract historical data
 export const groupSectorData = (data) => {
   const groupedData = {};
 
@@ -166,27 +166,24 @@ export const groupSectorData = (data) => {
   return groupedData;
 };
 
-// Helper function to group data for retail sectors
+// DIVIDEND YIELD CHART Updated functions for different sector groups using the centralized sectorDefinitions
 export const filterRetailSectors = (data) => {
   return groupSectorData(data.filter((row) => sectorDefinitions.Retail.includes(row.Sector)));
 };
 
-// Helper function to group data for residential sectors
 export const filterResidentialSectors = (data) => {
   return groupSectorData(data.filter((row) => sectorDefinitions.Residential.includes(row.Sector)));
 };
 
-// Helper function to group data for "All Other Equity" sectors
 export const filterAllOtherEquitySectors = (data) => {
   return groupSectorData(data.filter((row) => sectorDefinitions["All Other Equity"].includes(row.Sector)));
 };
 
-// Helper function to group data for mortgage sectors
 export const filterMortgageSectors = (data) => {
   return groupSectorData(data.filter((row) => sectorDefinitions.Mortgage.includes(row.Sector)));
 };
 
-// Helper function to group data by Total Index or Normalized Total Index
+// RETURNS CHART Helper function to group data by Total Index or Normalized Total Index
 const groupIndexData = (data, indexField) => {
   const groupedData = {};
 
@@ -210,7 +207,7 @@ const groupIndexData = (data, indexField) => {
   return groupedData;
 };
 
-// Updated functions for different sector groups using the centralized sectorDefinitions
+// RETURNS CHART Updated functions for different sector groups using the centralized sectorDefinitions
 export const filterRetailIndexData = (data) => {
   return groupIndexData(data.filter((row) => sectorDefinitions.Retail.includes(row.Sector)), "Total Index");
 };
@@ -227,7 +224,7 @@ export const filterMortgageIndexData = (data) => {
   return groupIndexData(data.filter((row) => sectorDefinitions.Mortgage.includes(row.Sector)), "Total Index");
 };
 
-// Helper function to exclude STDEV-related and average return fields from metrics
+// TABLE Helper function to exclude STDEV-related and average return fields from metrics
 export const filterOutSTDEV = (metrics) => {
   return metrics.map(({ 
       stdev1, stdev3, stdev5, stdev10, stdevLife, 
