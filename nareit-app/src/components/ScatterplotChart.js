@@ -7,7 +7,6 @@ import annotationPlugin from "chartjs-plugin-annotation"; // Import the annotati
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend, Title, annotationPlugin);
 
 const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)", title }) => {
-  // Assign black color for all points
   const chartData = {
     datasets: [
       {
@@ -24,6 +23,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)"
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Allow chart to stretch with container
     plugins: {
       legend: {
         display: true,
@@ -48,7 +48,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)"
             size: 10,
             weight: "normal",
           },
-          yAdjust: 13, // Move the label 13 pixels below the dot
+          yAdjust: 13,
         })),
       },
     },
@@ -59,41 +59,41 @@ const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)"
         title: {
           display: true,
           text: xLabel,
-          color: "#000", // Set x-axis title text color to black
+          color: "#000",
           font: {
             size: 14,
-            weight: "bold", // Match font size and weight to other charts
+            weight: "bold",
           },
         },
         grid: {
           drawOnChartArea: false,
         },
         ticks: {
-          color: "#000", // Set x-axis tick labels color to black
+          color: "#000",
         },
       },
       y: {
         title: {
           display: true,
-          text: yLabel, // Updated to reflect Average Monthly Returns
-          color: "#000", // Set y-axis title text color to black
+          text: yLabel,
+          color: "#000",
           font: {
             size: 14,
-            weight: "bold", // Match font size and weight to other charts
+            weight: "bold",
           },
         },
         grid: {
           drawOnChartArea: true,
         },
         ticks: {
-          callback: (value) => `${value.toFixed(2)}%`, // Format ticks as percentages
-          color: "#000", // Set y-axis tick labels color to black
+          callback: (value) => `${value.toFixed(2)}%`,
+          color: "#000",
         },
       },
     },
     elements: {
       point: {
-        radius: 6, // Size of the dots
+        radius: 6,
       },
     },
   };

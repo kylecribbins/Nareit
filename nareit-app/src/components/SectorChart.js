@@ -133,7 +133,7 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors, treasuryYie
     },
     elements: {
       point: {
-        radius: 1,
+        radius: 0,
       },
       line: {
         borderWidth: 2,

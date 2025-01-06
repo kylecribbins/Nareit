@@ -237,6 +237,17 @@ const SectorReturns = ({
         sector={selectedIncomeSector}
         title={`Price vs Income Returns for ${selectedIncomeSector}`}
       />
+      {/* Add source information below the chart */}
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        sx={{
+          marginTop: "10px",
+          textAlign: "left",
+        }}
+      >
+        Source: Nareit.
+      </Typography>
     </Box>
   </Box>
 </Box>
@@ -303,6 +314,17 @@ const SectorReturns = ({
             yLabel={selectedLabels.y}
             title={selectedLabels.title}
           />
+          {/* Add source information below the chart */}
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{
+              marginTop: "10px",
+              textAlign: "left",
+            }}
+          >
+            Source: Nareit.
+          </Typography>
         </Box>
       </Box>
     </div>
