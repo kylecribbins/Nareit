@@ -27,38 +27,19 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors, treasuryYie
       return obj;
     }, {});
 
-  // Determine min and max dates for the selected sector
-  const sectorDates = Object.values(filteredData).flatMap((sector) => sector.dates);
-  const minSectorDate = new Date(Math.min(...sectorDates.map((date) => new Date(date))));
-  const maxSectorDate = new Date(Math.max(...sectorDates.map((date) => new Date(date))));
-
-  // Filter Treasury data to match the sector's date range
-  const filteredTreasuryYields = {
-    dates: treasuryYields.dates.filter(
-      (date) => new Date(date) >= minSectorDate && new Date(date) <= maxSectorDate
-    ),
-    yields: treasuryYields.dates
-      .map((date, index) =>
-        new Date(date) >= minSectorDate && new Date(date) <= maxSectorDate
-          ? treasuryYields.yields[index]
-          : null
-      )
-      .filter((value) => value !== null), // Remove nulls from mismatched dates
-  };
-
-  // Generate a unified list of unique dates across the filtered data
+  // Generate a unified list of unique dates
   const allDates = Array.from(
     new Set([
-      ...sectorDates,
-      ...filteredTreasuryYields.dates, // Include filtered Treasury dates
+      ...Object.values(filteredData).flatMap((sector) => sector.dates),
+      ...treasuryYields.dates,
     ])
-  ).sort((a, b) => new Date(a) - new Date(b)); // Sort dates in ascending order
+  ).sort((a, b) => new Date(a) - new Date(b));
 
   // Prepare datasets for each sector
   const datasets = Object.keys(filteredData).map((sector) => {
     const sectorData = filteredData[sector];
 
-    // Align data with allDates, filling gaps with null
+    // Align sector data with allDates, filling gaps with null
     const alignedYields = allDates.map((date) => {
       const index = sectorData.dates.indexOf(date);
       return index !== -1 ? sectorData.yields[index] : null;
@@ -76,14 +57,18 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors, treasuryYie
   // Add 10-Year Treasury data as a separate dataset
   datasets.push({
     label: "10-Year Treasury",
-    data: filteredTreasuryYields.yields, // Use filtered Treasury yields
-    fill: true,
-    borderColor: "rgb(0, 0, 0)", // Black color for Treasury line
-    borderWidth: 2, // Match the thickness of other lines
-    borderDash: [5, 5], // Dotted line pattern (dash length and space)
-    pointStyle: "circle",
-    pointRadius: 1, // Match the point radius of other lines
+    data: allDates.map((date) => {
+      const index = treasuryYields.dates.indexOf(date);
+      return index !== -1 ? treasuryYields.yields[index] : null;
+    }),
+    fill: false,
+    borderColor: "#ff8000", // Orange color for high visibility
+    borderWidth: 2, // Match the same thickness as the dividend yield lines
     tension: 0.1, // Smooth lines
+    pointStyle: "circle",
+    pointRadius: 0, // Match the point size of dividend yield lines
+    pointBackgroundColor: "#ff8000", // Match point color with the line
+    borderDash: [8, 4], // Dash effect: 8px line, 4px gap
   });
 
   const chartData = {
@@ -93,19 +78,19 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors, treasuryYie
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Allows custom sizing
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
         position: "top",
         labels: {
-          color: "#000", // Set legend text color to black
+          color: "#000", // Legend text color
         },
       },
       title: {
         display: true,
         text: title,
-        color: "#000", // Set chart title text color to black
+        color: "#000", // Chart title color
       },
     },
     scales: {
@@ -114,44 +99,44 @@ const SectorChart = ({ historicalData, sectors, title, sectorColors, treasuryYie
         title: {
           display: true,
           text: "Dividend Yield",
-          color: "#000", // Set y-axis title text color to black
+          color: "#000",
           font: {
             size: 14,
-            weight: "bold", // Make y-axis title bold
+            weight: "bold",
           },
         },
         grid: {
-          drawOnChartArea: true, // Keep y-axis gridlines
+          drawOnChartArea: true,
         },
         ticks: {
-          color: "#000", // Set y-axis tick labels color to black
-          callback: (value) => `${value}%`, // Append % symbol to tick values
+          color: "#000",
+          callback: (value) => `${value}%`,
         },
       },
       x: {
         title: {
           display: true,
           text: "Date",
-          color: "#000", // Set x-axis title text color to black
+          color: "#000",
           font: {
             size: 14,
-            weight: "bold", // Make x-axis title bold
+            weight: "bold",
           },
         },
         grid: {
-          drawOnChartArea: false, // Remove x-axis gridlines
+          drawOnChartArea: false,
         },
         ticks: {
-          color: "#000", // Set x-axis tick labels color to black
+          color: "#000",
         },
       },
     },
     elements: {
       point: {
-        radius: 1, // Radius of 1 for all points
+        radius: 1,
       },
       line: {
-        borderWidth: 2, // Adjust the thickness of the line for better visibility
+        borderWidth: 2,
       },
     },
   };

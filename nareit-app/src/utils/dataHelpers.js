@@ -105,22 +105,24 @@ export const extractSectorMetrics = (data) => {
   return metrics;
 };
 
-// Helper function to extract unique 10-Year Treasury data
+// Helper function to extract 10-Year Treasury data
 export const extractTreasuryData = (data) => {
-  const treasuryData = {};
+  const dates = [];
+  const yields = [];
 
   data.forEach((row) => {
     const date = row.Date;
-    const treasuryYield = parseFloat(row["10-Year Treasury"]) || null;
+    const treasuryYield = parseFloat(row["10-Year Treasury"]);
 
-    if (date && treasuryYield !== null) {
-      treasuryData[date] = treasuryYield; // Use date as key to ensure uniqueness
+    if (date && !isNaN(treasuryYield)) {
+      dates.push(date); // Add date
+      yields.push(treasuryYield); // Add yield
     }
   });
 
   return {
-    dates: Object.keys(treasuryData).sort((a, b) => new Date(a) - new Date(b)), // Sort dates
-    yields: Object.values(treasuryData), // Get yields aligned with dates
+    dates, // Already in chronological order in the file
+    yields,
   };
 };
 
@@ -191,7 +193,6 @@ const groupIndexData = (data, indexField) => {
 };
 
 // Updated functions for different sector groups using the centralized sectorDefinitions
-
 export const filterRetailIndexData = (data) => {
   return groupIndexData(data.filter((row) => sectorDefinitions.Retail.includes(row.Sector)), "Total Index");
 };

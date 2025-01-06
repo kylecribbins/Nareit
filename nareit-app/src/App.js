@@ -23,8 +23,8 @@ import {
   filterAllOtherEquityIndexData,
   filterMortgageIndexData,
   extractScatterplotData,
+  extractTreasuryData, // Import extractTreasuryData
   sectorColors, // Import sectorColors
-  extractTreasuryData,
 } from "./utils/dataHelpers";
 import { sectorDefinitions } from "./utils/sectorDefinitions"; // Import sector definitions
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -45,9 +45,10 @@ function App() {
   const [scatterData5Year, setScatterData5Year] = useState([]);
   const [scatterData10Year, setScatterData10Year] = useState([]);
   const [selectedDividendSector, setSelectedDividendSector] = useState("Residential");
-  const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] }); // Added treasuryData state
+  const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] }); // Updated to reflect new file
 
   useEffect(() => {
+    // Load main REIT data
     Papa.parse(`${process.env.PUBLIC_URL}/reit_data.csv`, {
       download: true,
       header: true,
@@ -73,9 +74,17 @@ function App() {
         setScatterData3Year(extractScatterplotData(metrics, "stdev3", "avgReturn3"));
         setScatterData5Year(extractScatterplotData(metrics, "stdev5", "avgReturn5"));
         setScatterData10Year(extractScatterplotData(metrics, "stdev10", "avgReturn10"));
+      },
+    });
 
-        const treasuryData = extractTreasuryData(rawData); // Extract Treasury data
-        setTreasuryData(treasuryData); // Save Treasury data for the chart
+    // Load Treasury data from the new file
+    Papa.parse(`${process.env.PUBLIC_URL}/treasury_data.csv`, {
+      download: true,
+      header: true,
+      complete: (result) => {
+        const rawTreasuryData = result.data;
+        const treasury = extractTreasuryData(rawTreasuryData); // Use updated extractTreasuryData
+        setTreasuryData(treasury);
       },
     });
   }, []);
