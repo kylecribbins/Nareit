@@ -233,6 +233,32 @@ export const filterOutSTDEV = (metrics) => {
   }) => rest);
 };
 
+// Helper function to extract Price Return (%) and Income Return (%) for all sectors
+export const extractPriceAndIncomeReturns = (data) => {
+  const sectorData = {};
+
+  data.forEach((row) => {
+    const sector = row.Sector;
+    const date = row.Date;
+    const priceReturn = parseFloat(row["Price Return (%)"]);
+    const incomeReturn = parseFloat(row["Income Return (%)"]);
+
+    // Initialize sector if not already in sectorData
+    if (!sectorData[sector]) {
+      sectorData[sector] = { dates: [], priceReturns: [], incomeReturns: [] };
+    }
+
+    // Add valid data to the corresponding sector
+    if (sector && date && !isNaN(priceReturn) && !isNaN(incomeReturn)) {
+      sectorData[sector].dates.push(date);
+      sectorData[sector].priceReturns.push(priceReturn);
+      sectorData[sector].incomeReturns.push(incomeReturn);
+    }
+  });
+
+  return sectorData;
+};
+
 // Generic helper function to extract data for scatterplots
 export const extractScatterplotData = (metrics, xField, yField) => {
   return metrics

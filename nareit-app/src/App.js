@@ -25,7 +25,8 @@ import {
   extractScatterplotData,
   extractTreasuryData, 
   sectorColors,
-  extractSP500NormalizedData
+  extractSP500NormalizedData,
+  extractPriceAndIncomeReturns,
 } from "./utils/dataHelpers";
 import { sectorDefinitions } from "./utils/sectorDefinitions"; 
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -48,6 +49,7 @@ function App() {
   const [selectedDividendSector, setSelectedDividendSector] = useState("Residential");
   const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] });
   const [sp500Data, setSP500Data] = useState({ dates: [], normalized: [] }); // New state for S&P 500 data
+  const [priceAndIncomeData, setPriceAndIncomeData] = useState({});
 
   useEffect(() => {
     // Load main REIT data
@@ -76,6 +78,9 @@ function App() {
         setScatterData3Year(extractScatterplotData(metrics, "stdev3", "avgReturn3"));
         setScatterData5Year(extractScatterplotData(metrics, "stdev5", "avgReturn5"));
         setScatterData10Year(extractScatterplotData(metrics, "stdev10", "avgReturn10"));
+
+        const priceAndIncome = extractPriceAndIncomeReturns(rawData);
+        setPriceAndIncomeData(priceAndIncome);
       },
     });
 
@@ -247,6 +252,7 @@ function App() {
                 scatterData5Year={scatterData5Year}
                 scatterData10Year={scatterData10Year}
                 sp500Data={sp500Data} // Pass S&P 500 data
+                priceAndIncomeData={priceAndIncomeData} // Pass Price and Income data
                 sectorColors={sectorColors}
               />
             }
