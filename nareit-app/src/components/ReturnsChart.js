@@ -14,7 +14,7 @@ import { Line } from "react-chartjs-2";
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
+const ReturnsChart = ({ historicalData, sectors, title, sectorColors, sp500Data }) => {
   if (!historicalData || Object.keys(historicalData).length === 0) {
     return <p>No data available for the chart.</p>;
   }
@@ -29,7 +29,10 @@ const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
 
   // Generate a unified list of unique dates across all sectors
   const allDates = Array.from(
-    new Set(Object.values(filteredData).flatMap((sector) => sector.dates))
+    new Set([
+      ...Object.values(filteredData).flatMap((sector) => sector.dates),
+      ...sp500Data.dates, // Include S&P 500 dates
+    ])
   ).sort((a, b) => new Date(a) - new Date(b)); // Sort dates in ascending order
 
   // Prepare datasets for each sector
@@ -49,6 +52,23 @@ const ReturnsChart = ({ historicalData, sectors, title, sectorColors }) => {
       borderColor: sectorColors[sector] || "#000", // Use provided color or default to black
       tension: 0.1, // Smooth lines
     };
+  });
+
+  // Add S&P 500 normalized data as a separate dataset
+  datasets.push({
+    label: "S&P 500 (Normalized)",
+    data: allDates.map((date) => {
+      const index = sp500Data.dates.indexOf(date);
+      return index !== -1 ? sp500Data.normalized[index] : null;
+    }),
+    fill: false,
+    borderColor: "#ff8000", // Orange color for high visibility
+    borderWidth: 2, // Match the same thickness as other lines
+    tension: 0.1, // Smooth lines
+    pointStyle: "circle",
+    pointRadius: 0, // Remove dots for the S&P 500 line
+    pointBackgroundColor: "#ff8000", // Match point color with the line
+    borderDash: [8, 4], // Dash effect: 8px line, 4px gap
   });
 
   const chartData = {

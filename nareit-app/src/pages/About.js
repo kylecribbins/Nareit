@@ -27,7 +27,13 @@ const About = () => {
           Data is updated monthly at the end of each month
         </Typography>
         <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>
-          Returns on the homepage table are calculated as Compound Annual Growth Rates (CAGRs)
+          Returns on the homepage table are calculated as the Compound Annual Growth Rate of the Total Return Index
+        </Typography>
+        <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>
+          Standard deviations are calculated as the sample standard deviation of monthly returns
+        </Typography>
+        <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>
+          The S&P 500 data shown represents total return values, including dividends
         </Typography>
         <Typography variant="body1" gutterBottom sx={{ lineHeight: 4 }}>
           This website is an independent project and is not affiliated with any organizations, including REITs

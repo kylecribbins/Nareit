@@ -15,6 +15,7 @@ const SectorReturns = ({
   scatterData5Year,
   scatterData10Year,
   sectorColors,
+  sp500Data,
 }) => {
   const [selectedSector, setSelectedSector] = useState("Residential");
   const [selectedTimeframe, setSelectedTimeframe] = useState("1-Year");
@@ -131,28 +132,40 @@ const SectorReturns = ({
       </Box>
 
       <Box
+      sx={{
+        padding: "10px",
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <Box
         sx={{
-          padding: "10px",
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
+          width: "70%",
+          maxWidth: "70%",
+          height: "850px",
         }}
       >
-        <Box
+        <ReturnsChart
+          historicalData={selectedSectorData.data}
+          sectors={selectedSectorData.sectors}
+          title={selectedSectorData.title}
+          sectorColors={sectorColors}
+          sp500Data={sp500Data}
+        />
+        {/* Add source information below the chart */}
+        <Typography
+          variant="body2"
+          color="textSecondary"
           sx={{
-            width: "70%",
-            maxWidth: "70%",
-            height: "850px",
+            marginTop: "10px",
+            textAlign: "left", // Align text to the left edge of the chart
           }}
         >
-          <ReturnsChart
-            historicalData={selectedSectorData.data}
-            sectors={selectedSectorData.sectors}
-            title={selectedSectorData.title}
-            sectorColors={sectorColors}
-          />
-        </Box>
+          Source: Nareit, Yahoo Finance.
+        </Typography>
       </Box>
+    </Box>
 
       {/* Sector Risk vs. Reward Section */}
       <Box sx={{ padding: "20px", marginTop: "75px" }}>

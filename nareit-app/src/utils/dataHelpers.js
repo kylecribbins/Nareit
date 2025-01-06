@@ -126,6 +126,24 @@ export const extractTreasuryData = (data) => {
   };
 };
 
+// Helper function to extract S&P 500 normalized data
+export const extractSP500NormalizedData = (data) => {
+  const dates = [];
+  const normalized = [];
+
+  data.forEach((row) => {
+    const date = row.Date;
+    const normalizedValue = parseFloat(row["Normalized SP500"]);
+
+    if (date && !isNaN(normalizedValue)) {
+      dates.push(date);
+      normalized.push(normalizedValue);
+    }
+  });
+
+  return { dates, normalized };
+};
+
 // Helper function to group data by sector and extract historical data
 export const groupSectorData = (data) => {
   const groupedData = {};

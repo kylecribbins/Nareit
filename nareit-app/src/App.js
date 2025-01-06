@@ -23,10 +23,11 @@ import {
   filterAllOtherEquityIndexData,
   filterMortgageIndexData,
   extractScatterplotData,
-  extractTreasuryData, // Import extractTreasuryData
-  sectorColors, // Import sectorColors
+  extractTreasuryData, 
+  sectorColors,
+  extractSP500NormalizedData
 } from "./utils/dataHelpers";
-import { sectorDefinitions } from "./utils/sectorDefinitions"; // Import sector definitions
+import { sectorDefinitions } from "./utils/sectorDefinitions"; 
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 function App() {
@@ -45,7 +46,8 @@ function App() {
   const [scatterData5Year, setScatterData5Year] = useState([]);
   const [scatterData10Year, setScatterData10Year] = useState([]);
   const [selectedDividendSector, setSelectedDividendSector] = useState("Residential");
-  const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] }); // Updated to reflect new file
+  const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] });
+  const [sp500Data, setSP500Data] = useState({ dates: [], normalized: [] }); // New state for S&P 500 data
 
   useEffect(() => {
     // Load main REIT data
@@ -77,14 +79,25 @@ function App() {
       },
     });
 
-    // Load Treasury data from the new file
+    // Load Treasury data
     Papa.parse(`${process.env.PUBLIC_URL}/treasury_data.csv`, {
       download: true,
       header: true,
       complete: (result) => {
         const rawTreasuryData = result.data;
-        const treasury = extractTreasuryData(rawTreasuryData); // Use updated extractTreasuryData
+        const treasury = extractTreasuryData(rawTreasuryData);
         setTreasuryData(treasury);
+      },
+    });
+
+    // Load S&P 500 data
+    Papa.parse(`${process.env.PUBLIC_URL}/sp500_data.csv`, {
+      download: true,
+      header: true,
+      complete: (result) => {
+        const rawSP500Data = result.data;
+        const sp500 = extractSP500NormalizedData(rawSP500Data); // Use the helper function
+        setSP500Data(sp500);
       },
     });
   }, []);
@@ -93,22 +106,22 @@ function App() {
   const dividendSectorDataMap = {
     Residential: {
       data: residentialData,
-      sectors: sectorDefinitions.Residential, // Use sectorDefinitions
+      sectors: sectorDefinitions.Residential,
       title: "Residential Sectors",
     },
     Retail: {
       data: retailData,
-      sectors: sectorDefinitions.Retail, // Use sectorDefinitions
+      sectors: sectorDefinitions.Retail,
       title: "Retail Sectors",
     },
     "All Other Equity": {
       data: otherEquityData,
-      sectors: sectorDefinitions["All Other Equity"], // Use sectorDefinitions
+      sectors: sectorDefinitions["All Other Equity"],
       title: "All Other Equity Sectors",
     },
     Mortgage: {
       data: mortgageData,
-      sectors: sectorDefinitions.Mortgage, // Use sectorDefinitions
+      sectors: sectorDefinitions.Mortgage,
       title: "Mortgage Sectors",
     },
   };
@@ -149,24 +162,21 @@ function App() {
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "20px", // Add space between title and selector
-                          width: "70%", // Match the width of the chart below
-                          margin: "0 auto", // Center the container
+                          gap: "20px",
+                          width: "70%",
+                          margin: "0 auto",
                         }}
                       >
-                        {/* Title */}
                         <Typography
                           variant="h5"
                           component="h2"
                           sx={{
                             fontWeight: "bold",
-                            flexShrink: 0, // Prevent the title from shrinking
+                            flexShrink: 0,
                           }}
                         >
                           Sector Dividend Yields
                         </Typography>
-
-                        {/* Form Selector */}
                         <FormControl sx={{ minWidth: 250 }}>
                           <InputLabel id="dividend-sector-select-label">Select Sector</InputLabel>
                           <Select
@@ -193,20 +203,31 @@ function App() {
                       }}
                     >
                       <Box
+                      sx={{
+                        width: "70%",
+                        maxWidth: "70%",
+                        height: "850px",
+                      }}
+                    >
+                      <SectorChart
+                        historicalData={selectedSectorData.data}
+                        sectors={selectedSectorData.sectors}
+                        title={selectedSectorData.title}
+                        treasuryYields={treasuryData}
+                        sectorColors={sectorColors}
+                      />
+                      {/* Add source information below the chart */}
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
                         sx={{
-                          width: "70%",
-                          maxWidth: "70%",
-                          height: "850px",
+                          marginTop: "10px",
+                          textAlign: "left", // Align text to the left
                         }}
                       >
-                        <SectorChart
-                          historicalData={selectedSectorData.data}
-                          sectors={selectedSectorData.sectors}
-                          title={selectedSectorData.title}
-                          treasuryYields={treasuryData} // Pass Treasury data
-                          sectorColors={sectorColors} // Pass colors
-                        />
-                      </Box>
+                        Source: Nareit, FRED.
+                      </Typography>
+                    </Box>
                     </Box>
                   </>
                 )}
@@ -225,7 +246,8 @@ function App() {
                 scatterData3Year={scatterData3Year}
                 scatterData5Year={scatterData5Year}
                 scatterData10Year={scatterData10Year}
-                sectorColors={sectorColors} // Pass colors to SectorReturns
+                sp500Data={sp500Data} // Pass S&P 500 data
+                sectorColors={sectorColors}
               />
             }
           />
