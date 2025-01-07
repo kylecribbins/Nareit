@@ -74,6 +74,11 @@ const sectors = [
     description:
       '"Specialty REITs own and manage a unique mix of property types and collect rent from tenants. Specialty REITs own properties that don’t fit within the other REIT sectors. Examples of properties owned by specialty REITs include movie theaters, farmland and outdoor advertising sites.\n\nMultiple Six Flags amusement parks, and the Northstar California ski resort are REIT owned."',
   },
+  {
+    title: "Mortgage",
+    description:
+      '"Mortgage REITs (mREITS) provide financing for income-producing real estate by purchasing or originating mortgages and mortgage-backed securities (MBS) and earning income from the interest on these investments."',
+  },
 ];
 
 const SectorDefinitionsAccordion = () => {

@@ -88,7 +88,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)"
           },
         },
         grid: {
-          drawOnChartArea: true,
+          drawOnChartArea: false,
         },
         ticks: {
           callback: (value) => `${value.toFixed(2)}%`,
