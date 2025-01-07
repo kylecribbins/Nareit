@@ -9,6 +9,7 @@
     "@mui/material": "^6.3.1",
     "chart.js": "^4.4.7",
     "chartjs-plugin-annotation": "^3.1.0",
+    "chartjs-plugin-crosshair": "^2.0.0",
     "cra-template": "1.2.0",
     "papaparse": "^5.4.1",
     "react": "^19.0.0",
@@ -41,5 +42,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "./"
 }
