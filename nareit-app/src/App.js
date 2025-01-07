@@ -11,6 +11,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import SectorReturns from "./pages/SectorReturns";
+import SectorDefinitionsAccordion from "./components/SectorDefinitionsAccordion";
 import About from "./pages/About";
 import {
   extractSectorMetrics,
@@ -185,6 +186,8 @@ function App() {
                       }
                       description="Source: Nareit, FRED."
                     />
+                                        {/* Sector Definitions Accordion */}
+                                        <SectorDefinitionsAccordion />
                   </>
                 )}
               </>
