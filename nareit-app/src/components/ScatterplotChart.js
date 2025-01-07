@@ -31,6 +31,11 @@ const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)"
           color: "#000", // Set legend text color to black
         },
       },
+      title: {
+        display: true,
+        text: title, // Use the title prop
+        color: "#000", // Title color set to black
+      },
       tooltip: {
         callbacks: {
           label: (context) =>
