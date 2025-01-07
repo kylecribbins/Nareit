@@ -6,6 +6,7 @@ import SectorChart from "./components/SectorChart";
 import SectionHeader from "./components/SectionHeader";
 import AppAppBar from "./components/AppAppBar";
 import Footer from "./components/Footer";
+import ChartContainer from "./components/ChartContainer"; // Import ChartContainer
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -23,13 +24,12 @@ import {
   filterAllOtherEquityIndexData,
   filterMortgageIndexData,
   extractScatterplotData,
-  extractTreasuryData, 
+  extractTreasuryData,
   sectorColors,
   extractSP500NormalizedData,
   extractPriceAndIncomeReturns,
 } from "./utils/dataHelpers";
-import { sectorDefinitions } from "./utils/sectorDefinitions"; 
-import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { sectorDefinitions } from "./utils/sectorDefinitions";
 
 function App() {
   const [data, setData] = useState([]);
@@ -48,7 +48,7 @@ function App() {
   const [scatterData10Year, setScatterData10Year] = useState([]);
   const [selectedDividendSector, setSelectedDividendSector] = useState("Residential");
   const [treasuryData, setTreasuryData] = useState({ dates: [], yields: [] });
-  const [sp500Data, setSP500Data] = useState({ dates: [], normalized: [] }); // New state for S&P 500 data
+  const [sp500Data, setSP500Data] = useState({ dates: [], normalized: [] });
   const [priceAndIncomeData, setPriceAndIncomeData] = useState({});
 
   useEffect(() => {
@@ -101,7 +101,7 @@ function App() {
       header: true,
       complete: (result) => {
         const rawSP500Data = result.data;
-        const sp500 = extractSP500NormalizedData(rawSP500Data); // Use the helper function
+        const sp500 = extractSP500NormalizedData(rawSP500Data);
         setSP500Data(sp500);
       },
     });
@@ -162,78 +162,29 @@ function App() {
                     <SectionHeader title="REIT Central" />
                     <Table data={transformedData} />
 
-                    <Box sx={{ padding: "20px", marginTop: "75px" }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "20px",
-                          width: "70%",
-                          margin: "0 auto",
-                        }}
-                      >
-                        <Typography
-                          variant="h5"
-                          component="h2"
-                          sx={{
-                            fontWeight: "bold",
-                            flexShrink: 0,
-                          }}
-                        >
-                          Sector Dividend Yields
-                        </Typography>
-                        <FormControl sx={{ minWidth: 250 }}>
-                          <InputLabel id="dividend-sector-select-label">Select Sector</InputLabel>
-                          <Select
-                            labelId="dividend-sector-select-label"
-                            value={selectedDividendSector}
-                            onChange={(e) => setSelectedDividendSector(e.target.value)}
-                            autoWidth
-                          >
-                            <MenuItem value="Residential">Residential</MenuItem>
-                            <MenuItem value="Retail">Retail</MenuItem>
-                            <MenuItem value="All Other Equity">All Other Equity</MenuItem>
-                            <MenuItem value="Mortgage">Mortgage</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Box>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        padding: "10px",
-                        textAlign: "center",
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Box
-                      sx={{
-                        width: "70%",
-                        maxWidth: "70%",
-                        height: "850px",
-                      }}
-                    >
-                      <SectorChart
-                        historicalData={selectedSectorData.data}
-                        sectors={selectedSectorData.sectors}
-                        title={selectedSectorData.title}
-                        treasuryYields={treasuryData}
-                        sectorColors={sectorColors}
-                      />
-                      {/* Add source information below the chart */}
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        sx={{
-                          marginTop: "10px",
-                          textAlign: "left", // Align text to the left
-                        }}
-                      >
-                        Source: Nareit, FRED.
-                      </Typography>
-                    </Box>
-                    </Box>
+                    {/* Dividend Yield Chart in ChartContainer */}
+                    <ChartContainer
+                      title="Sector Dividend Yields"
+                      formControlLabel="Select Sector"
+                      formControlValue={selectedDividendSector}
+                      formControlOptions={[
+                        { label: "Residential", value: "Residential" },
+                        { label: "Retail", value: "Retail" },
+                        { label: "All Other Equity", value: "All Other Equity" },
+                        { label: "Mortgage", value: "Mortgage" },
+                      ]}
+                      onFormControlChange={(e) => setSelectedDividendSector(e.target.value)}
+                      chartComponent={
+                        <SectorChart
+                          historicalData={selectedSectorData.data}
+                          sectors={selectedSectorData.sectors}
+                          title={selectedSectorData.title}
+                          treasuryYields={treasuryData}
+                          sectorColors={sectorColors}
+                        />
+                      }
+                      description="Source: Nareit, FRED."
+                    />
                   </>
                 )}
               </>
@@ -251,8 +202,8 @@ function App() {
                 scatterData3Year={scatterData3Year}
                 scatterData5Year={scatterData5Year}
                 scatterData10Year={scatterData10Year}
-                sp500Data={sp500Data} // Pass S&P 500 data
-                priceAndIncomeData={priceAndIncomeData} // Pass Price and Income data
+                sp500Data={sp500Data}
+                priceAndIncomeData={priceAndIncomeData}
                 sectorColors={sectorColors}
               />
             }

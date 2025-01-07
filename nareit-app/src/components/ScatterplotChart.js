@@ -98,7 +98,7 @@ const ScatterplotChart = ({ data, xLabel, yLabel = "Average Monthly Returns (%)"
     },
   };
 
-  return <Scatter data={chartData} options={options} />;
+  return <Scatter data={chartData} options={options} height={550} />;
 };
 
 export default ScatterplotChart;

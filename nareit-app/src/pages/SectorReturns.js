@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import ReturnsChart from "../components/ReturnsChart";
 import ScatterplotChart from "../components/ScatterplotChart";
-import SectionHeader from "../components/SectionHeader";
 import PriceIncomeChart from "../components/PriceIncomeChart";
-import { Box, Typography, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import ChartContainer from "../components/ChartContainer";
 import { sectorDefinitions, allSectors } from "../utils/sectorDefinitions";
 
 const SectorReturns = ({
@@ -19,46 +18,17 @@ const SectorReturns = ({
   sp500Data,
   priceAndIncomeData,
 }) => {
+  // State for dropdowns
   const [selectedSector, setSelectedSector] = useState("Residential");
-  const [selectedIncomeSector, setSelectedIncomeSector] = useState(allSectors[0]); // New state for Price vs Income chart
-
+  const [selectedIncomeSector, setSelectedIncomeSector] = useState(allSectors[0]);
   const [selectedTimeframe, setSelectedTimeframe] = useState("1-Year");
 
-  const handleSectorChange = (event) => {
-    setSelectedSector(event.target.value);
-  };
+  // Handlers for dropdown changes
+  const handleSectorChange = (event) => setSelectedSector(event.target.value);
+  const handleIncomeSectorChange = (event) => setSelectedIncomeSector(event.target.value);
+  const handleTimeframeChange = (event) => setSelectedTimeframe(event.target.value);
 
-  const handleIncomeSectorChange = (event) => {
-    setSelectedIncomeSector(event.target.value);
-  };
-
-  const handleTimeframeChange = (event) => {
-    setSelectedTimeframe(event.target.value);
-  };
-
-  const sectorDataMap = {
-    Residential: {
-      data: residentialData,
-      sectors: sectorDefinitions.Residential,
-      title: "Residential Sectors",
-    },
-    Retail: {
-      data: retailData,
-      sectors: sectorDefinitions.Retail,
-      title: "Retail Sectors",
-    },
-    "All Other Equity": {
-      data: allOtherEquityData,
-      sectors: sectorDefinitions["All Other Equity"],
-      title: "All Other Equity Sectors",
-    },
-    Mortgage: {
-      data: mortgageData,
-      sectors: sectorDefinitions.Mortgage,
-      title: "Mortgage Sectors",
-    },
-  };
-
+  // Data and labels for sector risk vs reward
   const scatterplotDataMap = {
     "1-Year": scatterData1Year,
     "3-Year": scatterData3Year,
@@ -89,71 +59,50 @@ const SectorReturns = ({
     },
   };
 
-  const selectedSectorData = sectorDataMap[selectedSector];
   const selectedScatterplotData = scatterplotDataMap[selectedTimeframe];
   const selectedLabels = scatterplotLabelsMap[selectedTimeframe];
 
+  // Data mapping for the sector returns chart
+  const sectorDataMap = {
+    Residential: {
+      data: residentialData,
+      sectors: sectorDefinitions.Residential,
+      title: "Residential Sectors",
+    },
+    Retail: {
+      data: retailData,
+      sectors: sectorDefinitions.Retail,
+      title: "Retail Sectors",
+    },
+    "All Other Equity": {
+      data: allOtherEquityData,
+      sectors: sectorDefinitions["All Other Equity"],
+      title: "All Other Equity Sectors",
+    },
+    Mortgage: {
+      data: mortgageData,
+      sectors: sectorDefinitions.Mortgage,
+      title: "Mortgage Sectors",
+    },
+  };
+
+  const selectedSectorData = sectorDataMap[selectedSector];
+
   return (
     <div>
-      {/* Section Header */}
-      <SectionHeader title="REIT Sector Returns" />
-
-      {/* Sector Returns Section */}
-      <Box sx={{ padding: "20px", marginTop: "10px" }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "20px",
-            width: "70%",
-            margin: "0 auto",
-          }}
-        >
-          <Typography
-            variant="h5"
-            component="h2"
-            sx={{
-              fontWeight: "bold",
-              flexShrink: 0,
-            }}
-          >
-            Sector Returns
-          </Typography>
-
-          {/* Sector Selector for Sector Returns */}
-          <FormControl sx={{ minWidth: 250 }}>
-            <InputLabel id="sector-select-label">Select Sector</InputLabel>
-            <Select
-              labelId="sector-select-label"
-              value={selectedSector}
-              onChange={handleSectorChange}
-              autoWidth
-            >
-              <MenuItem value="Residential">Residential</MenuItem>
-              <MenuItem value="Retail">Retail</MenuItem>
-              <MenuItem value="All Other Equity">All Other Equity</MenuItem>
-              <MenuItem value="Mortgage">Mortgage</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-
-      {/* Returns Chart */}
-      <Box
-        sx={{
-          padding: "10px",
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Box
-          sx={{
-            width: "70%",
-            maxWidth: "70%",
-            height: "850px",
-          }}
-        >
+      {/* Sector Returns Chart */}
+      <ChartContainer
+        title="Sector Returns"
+        formControlLabel="Select Sector"
+        formControlValue={selectedSector}
+        formControlOptions={[
+          { label: "Residential", value: "Residential" },
+          { label: "Retail", value: "Retail" },
+          { label: "All Other Equity", value: "All Other Equity" },
+          { label: "Mortgage", value: "Mortgage" },
+        ]}
+        onFormControlChange={handleSectorChange}
+        chartComponent={
           <ReturnsChart
             historicalData={selectedSectorData.data}
             sectors={selectedSectorData.sectors}
@@ -161,172 +110,52 @@ const SectorReturns = ({
             sectorColors={sectorColors}
             sp500Data={sp500Data}
           />
-          {/* Add source information below the chart */}
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{
-              marginTop: "10px",
-              textAlign: "left",
-            }}
-          >
-            Source: Nareit, Yahoo Finance.
-          </Typography>
-        </Box>
-      </Box>
-
-{/* Price vs Income Returns Chart */}
-<Box sx={{ padding: "20px", marginTop: "75px" }}>
-  <Box
-    sx={{
-      display: "flex",
-      alignItems: "center",
-      gap: "20px", // Space between title and selector
-      width: "70%", // Match the width of other chart sections
-      margin: "0 auto", // Center the container
-    }}
-  >
-    {/* Title */}
-    <Typography
-      variant="h5"
-      component="h2"
-      sx={{
-        fontWeight: "bold",
-        flexShrink: 0, // Prevent title from shrinking
-      }}
-    >
-      Sector Price vs. Income Return
-    </Typography>
-
-    {/* New Dropdown for All Sectors */}
-    <FormControl sx={{ minWidth: 250 }}>
-      <InputLabel id="income-sector-select-label">Select Sector</InputLabel>
-      <Select
-        labelId="income-sector-select-label"
-        value={selectedIncomeSector}
-        onChange={handleIncomeSectorChange}
-        autoWidth
-      >
-        {allSectors.map((sector) => (
-          <MenuItem key={sector} value={sector}>
-            {sector}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </Box>
-
-  {/* PriceIncomeChart */}
-  <Box
-    sx={{
-      padding: "10px",
-      textAlign: "center",
-      display: "flex",
-      justifyContent: "center",
-    }}
-  >
-    <Box
-      sx={{
-        width: "70%",
-        maxWidth: "70%",
-        height: "500px",
-      }}
-    >
-      <PriceIncomeChart
-        data={priceAndIncomeData}
-        sector={selectedIncomeSector}
-        title={`Price vs Income Returns for ${selectedIncomeSector}`}
+        }
+        description="Source: Nareit, Yahoo Finance."
       />
-      {/* Add source information below the chart */}
-      <Typography
-        variant="body2"
-        color="textSecondary"
-        sx={{
-          marginTop: "10px",
-          textAlign: "left",
-        }}
-      >
-        Source: Nareit.
-      </Typography>
-    </Box>
-  </Box>
-</Box>
 
-      {/* Sector Risk vs. Reward Section */}
-      <Box sx={{ padding: "20px", marginTop: "75px" }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "20px",
-            width: "70%",
-            margin: "0 auto",
-          }}
-        >
-          <Typography
-            variant="h5"
-            component="h2"
-            sx={{
-              fontWeight: "bold",
-              flexShrink: 0,
-            }}
-          >
-            Sector Risk vs. Reward
-          </Typography>
+      {/* Price vs Income Returns Chart */}
+      <ChartContainer
+        title="Sector Price vs Income Return"
+        formControlLabel="Select Sector"
+        formControlValue={selectedIncomeSector}
+        formControlOptions={allSectors.map((sector) => ({
+          label: sector,
+          value: sector,
+        }))}
+        onFormControlChange={handleIncomeSectorChange}
+        chartComponent={
+          <PriceIncomeChart
+            data={priceAndIncomeData}
+            sector={selectedIncomeSector}
+            title={`Price vs Income Returns for ${selectedIncomeSector}`}
+          />
+        }
+        description="Source: Nareit."
+      />
 
-          {/* Form Selector for Timeframe */}
-          <FormControl sx={{ minWidth: 250 }}>
-            <InputLabel id="timeframe-select-label">Select Timeframe</InputLabel>
-            <Select
-              labelId="timeframe-select-label"
-              value={selectedTimeframe}
-              onChange={handleTimeframeChange}
-              autoWidth
-            >
-              <MenuItem value="1-Year">1-Year</MenuItem>
-              <MenuItem value="3-Year">3-Year</MenuItem>
-              <MenuItem value="5-Year">5-Year</MenuItem>
-              <MenuItem value="10-Year">10-Year</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-      </Box>
-
-      {/* Scatterplot Chart */}
-      <Box
-        sx={{
-          padding: "10px",
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Box
-          sx={{
-            width: "70%",
-            maxWidth: "70%",
-            height: "700px",
-          }}
-        >
+      {/* Sector Risk vs Reward Chart */}
+      <ChartContainer
+        title="Sector Risk vs Reward"
+        formControlLabel="Select Timeframe"
+        formControlValue={selectedTimeframe}
+        formControlOptions={[
+          { label: "1-Year", value: "1-Year" },
+          { label: "3-Year", value: "3-Year" },
+          { label: "5-Year", value: "5-Year" },
+          { label: "10-Year", value: "10-Year" },
+        ]}
+        onFormControlChange={handleTimeframeChange}
+        chartComponent={
           <ScatterplotChart
             data={selectedScatterplotData}
             xLabel={selectedLabels.x}
             yLabel={selectedLabels.y}
             title={selectedLabels.title}
           />
-          {/* Add source information below the chart */}
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{
-              marginTop: "10px",
-              textAlign: "left",
-            }}
-          >
-            Source: Nareit.
-          </Typography>
-        </Box>
-      </Box>
+        }
+        description="Source: Nareit."
+      />
     </div>
   );
 };
