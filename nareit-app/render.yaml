@@ -1,0 +1,4 @@
+static:
+  routes:
+    - source: /.*
+      destination: /index.html
