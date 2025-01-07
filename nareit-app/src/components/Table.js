@@ -88,10 +88,29 @@ const MaterialTable = ({ data }) => {
   return (
     <Box
       sx={{
-        width: "65%",
+        border: "1px solid #e0e0e0",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        padding: "16px",
+        backgroundColor: "#fff",
         margin: "20px auto",
+        width: "80%",
+        maxWidth: "1600px",
       }}
     >
+      {/* Title */}
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: "bold",
+          color: "#000",
+          marginBottom: "16px", // Space below the title
+        }}
+      >
+        Sector Overview
+      </Typography>
+
+      {/* Table */}
       <TableContainer component={Paper} style={{ marginTop: "20px" }}>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="customized table">
           <TableHead>

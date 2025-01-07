@@ -15,7 +15,7 @@ const SectionHeader = ({ title }) => {
         component="h2"
         sx={{
           fontWeight: "bold",
-          color: "#000000", // Match the green color of the AppBar for consistency
+          color: "#000000", // Black text color
           textShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)", // Add a subtle shadow for better visibility
         }}
       >

@@ -19,6 +19,9 @@ const ChartContainer = ({
         padding: "16px",
         backgroundColor: "#fff", // White background for the outer container
         marginBottom: "24px", // Space below the container
+        width: "80%",
+        maxWidth: "1600px",
+        margin: "0 auto", // Center the container
       }}
     >
       {/* Title and Form Control */}
